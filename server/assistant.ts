@@ -1,3 +1,4 @@
+/** Source: ai40_codemind_v7_full_source.zip → ai40.ts; adapted with an explicit untrusted-context boundary. */
 import { invokeLLM, listLLMModels } from "./_core/llm";
 
 export type AssistantMode = "question" | "research" | "code" | "create";

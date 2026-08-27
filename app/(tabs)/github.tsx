@@ -1,9 +1,11 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as WebBrowser from "expo-web-browser";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Alert, FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { Ai40Card, palette, PrimaryButton, ScreenTitle, StatusPill } from "@/components/ai40-ui";
 import { ScreenContainer } from "@/components/screen-container";
+import { trpc } from "@/lib/trpc";
 
 const SOURCES = [
   {
@@ -25,6 +27,8 @@ const SOURCES = [
 ];
 
 export default function GithubScreen() {
+  const [repositoryUrl, setRepositoryUrl] = useState("");
+  const importer = trpc.github.importManifest.useMutation();
   const openSource = (url: string) => {
     void WebBrowser.openBrowserAsync(url, {
       toolbarColor: palette.indigo,
@@ -32,6 +36,13 @@ export default function GithubScreen() {
       showTitle: true,
       enableDefaultShareMenuItem: true,
     });
+  };
+  const importManifest = async () => {
+    try {
+      await importer.mutateAsync({ repositoryUrl: repositoryUrl.trim() });
+    } catch (error) {
+      Alert.alert("Не удалось получить manifest", error instanceof Error ? error.message : "Проверьте ссылку и повторите запрос.");
+    }
   };
 
   return (
@@ -52,6 +63,18 @@ export default function GithubScreen() {
                   <Text style={styles.policyText}>Каталог создан по вашим материалам. Репозитории с предполагаемыми утечками или неподтверждёнными правами не добавлены. Содержимое по ссылкам не запускается и не копируется автоматически.</Text>
                 </View>
               </View>
+            </Ai40Card>
+            <Ai40Card style={styles.importCard}>
+              <View style={styles.importHeading}>
+                <MaterialIcons name="account-tree" size={21} color={palette.indigo} />
+                <View style={styles.importCopy}>
+                  <Text style={styles.importTitle}>Импорт публичного manifest</Text>
+                  <Text style={styles.importText}>Модуль перенесён из вашего AI40 CodeMind. Он читает только метаданные и дерево файлов публичного репозитория: без clone, установки зависимостей и запуска кода.</Text>
+                </View>
+              </View>
+              <TextInput value={repositoryUrl} onChangeText={setRepositoryUrl} placeholder="https://github.com/owner/repository" placeholderTextColor="#8990A5" autoCapitalize="none" autoCorrect={false} keyboardType="url" editable={!importer.isPending} style={styles.urlInput} />
+              <PrimaryButton label={importer.isPending ? "Получаю manifest…" : "Проверить manifest"} icon="account-tree" onPress={() => { void importManifest(); }} disabled={!repositoryUrl.trim() || importer.isPending} />
+              {importer.data ? <View style={styles.manifestResult}><StatusPill label="Manifest готов" tone="ready" /><Text style={styles.manifestTitle}>{importer.data.fullName}</Text><Text style={styles.manifestMeta}>Ветка: {importer.data.defaultBranch} · записей: {importer.data.totalEntries}</Text><Text style={styles.manifestMeta}>Показано: {importer.data.files.length}{importer.data.truncated ? " · список ограничен" : ""}</Text></View> : null}
             </Ai40Card>
             <Text style={styles.listLabel}>Доступные источники · {SOURCES.length}</Text>
           </View>
@@ -89,6 +112,15 @@ const styles = StyleSheet.create({
   policyCopy: { flex: 1, gap: 4 },
   policyTitle: { color: palette.ink, fontSize: 14, fontWeight: "800" },
   policyText: { color: palette.muted, fontSize: 12, lineHeight: 18 },
+  importCard: { gap: 11, backgroundColor: "#F5F6FF", borderColor: "#DADDFF" },
+  importHeading: { flexDirection: "row", gap: 10, alignItems: "flex-start" },
+  importCopy: { flex: 1, gap: 3 },
+  importTitle: { color: palette.ink, fontSize: 14, fontWeight: "800" },
+  importText: { color: palette.muted, fontSize: 12, lineHeight: 17 },
+  urlInput: { minHeight: 44, borderWidth: 1, borderColor: "#D6DAEC", backgroundColor: "#FFFFFF", color: palette.ink, borderRadius: 12, paddingHorizontal: 12, fontSize: 13 },
+  manifestResult: { paddingTop: 2, gap: 4 },
+  manifestTitle: { color: palette.ink, fontSize: 14, fontWeight: "800" },
+  manifestMeta: { color: palette.muted, fontSize: 11, lineHeight: 16 },
   listLabel: { color: palette.muted, fontSize: 12, fontWeight: "700" },
   sourceCard: { gap: 14 },
   sourceTop: { flexDirection: "row", alignItems: "center", gap: 10 },

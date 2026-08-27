@@ -111,6 +111,7 @@ export default function AssistantScreen() {
                   <Text style={styles.title}>Ассистент</Text>
                 </View>
                 <View style={styles.headerActions}>
+                  <IconAction icon="smart-toy" label="Открыть Agent Runbook" onPress={() => router.push("/agent" as never)} />
                   <IconAction icon="delete-sweep" label="Очистить диалог" onPress={resetConversation} />
                   <IconAction icon="settings" label="Открыть настройки" onPress={() => router.push("/settings" as never)} />
                 </View>

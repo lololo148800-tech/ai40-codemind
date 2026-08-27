@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 import { askAssistant } from "./assistant";
+import { createAgentRunbook } from "./agent-runbook";
+import { importPublicGithubManifest } from "./github-manifest";
 import { COOKIE_NAME } from "../shared/const.js";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -29,6 +31,16 @@ export const appRouter = router({
       history: assistantHistorySchema.optional(),
       context: z.string().max(12_000).optional(),
     })).mutation(({ input }) => askAssistant(input)),
+  }),
+  agent: router({
+    createRunbook: publicProcedure.input(z.object({
+      goal: z.string().trim().min(3).max(12_000),
+    })).mutation(({ input }) => ({ runbook: createAgentRunbook(input.goal) })),
+  }),
+  github: router({
+    importManifest: publicProcedure.input(z.object({
+      repositoryUrl: z.string().trim().url().max(500),
+    })).mutation(({ input }) => importPublicGithubManifest(input.repositoryUrl)),
   }),
 });
 
