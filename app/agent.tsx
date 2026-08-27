@@ -31,6 +31,13 @@ function roleTone(status: string): "neutral" | "ready" | "warning" | "blocked" {
   return "neutral";
 }
 
+function gateTone(status: string): "neutral" | "ready" | "warning" | "blocked" {
+  if (status === "ready_to_plan") return "ready";
+  if (status === "needs_context") return "warning";
+  if (status === "degraded" || status === "blocked") return "blocked";
+  return "neutral";
+}
+
 export default function AgentScreen() {
   const router = useRouter();
   const [goal, setGoal] = useState("Проанализируй мой публичный GitHub-репозиторий, сделай review, предложи тесты и подготовь безопасный план исправлений.");
@@ -60,11 +67,7 @@ export default function AgentScreen() {
   const executePanel = async () => {
     setError("");
     try {
-      await runPanel.mutateAsync({
-        goal: goal.trim(),
-        intent,
-        context: context.trim() || undefined,
-      });
+      await runPanel.mutateAsync({ goal: goal.trim(), intent, context: context.trim() || undefined });
     } catch (value) {
       setError(value instanceof Error ? value.message : "Не удалось запустить многоагентную панель.");
     }
@@ -77,11 +80,8 @@ export default function AgentScreen() {
     }
     Alert.alert(
       "Запустить анализ из 10 ролей?",
-      "На серверный AI-анализ будут переданы цель и необязательный вставленный контекст. Панель формирует выводы и план; она не изменяет файлы, не запускает команды и не собирает APK.",
-      [
-        { text: "Отмена", style: "cancel" },
-        { text: "Запустить анализ", onPress: () => { void executePanel(); } },
-      ],
+      "На серверный AI-анализ будут переданы цель и необязательный вставленный контекст. Панель формирует выводы и quality gate; она не изменяет файлы, не запускает команды и не собирает APK.",
+      [{ text: "Отмена", style: "cancel" }, { text: "Запустить анализ", onPress: () => { void executePanel(); } }],
     );
   };
 
@@ -89,58 +89,48 @@ export default function AgentScreen() {
     <ScreenContainer className="px-4" edges={["top", "bottom", "left", "right"]} containerClassName="bg-background">
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <ScreenTitle eyebrow="AI40 CODEMIND" title="Agent Runbook" action={<IconAction icon="close" label="Закрыть runbook" onPress={() => router.back()} />} />
-
         <Ai40Card style={styles.intro}>
-          <StatusPill label="10 ролей + синтез" tone="ready" />
+          <StatusPill label="10 ролей + критик" tone="ready" />
           <Text style={styles.introTitle}>Многоагентный центр разработки</Text>
-          <Text style={styles.introBody}>Десять независимых инженерных ролей анализируют одну цель параллельно, затем сильная модель собирает итог. Этот экран не имитирует правки, тесты или сборку APK: для таких действий нужен отдельный worker и точное подтверждение.</Text>
+          <Text style={styles.introBody}>Девять независимых инженерных ролей анализируют цель параллельно, после чего отдельный критик сверяет их выводы, а синтезатор строит evidence-first результат. Экран не имитирует правки, тесты или сборку APK.</Text>
         </Ai40Card>
 
         <Ai40Card style={styles.referenceCard}>
           <StatusPill label="Справочный импорт" tone="neutral" />
           <Text style={styles.referenceTitle}>Mega AI Bot v3 добавлен в проект</Text>
-          <Text style={styles.referenceText}>{capabilities.data ? `Импортировано профилей: ${capabilities.data.importedReference.importedProfiles}; активных ролей панели: ${capabilities.data.importedReference.activeRoles}. Реальные model ID выбираются только из текущего server catalog.` : "Проверяю каталог ролей…"}</Text>
+          <Text style={styles.referenceText}>{capabilities.data ? `Импортировано профилей: ${capabilities.data.importedReference.importedProfiles}; активных ролей: ${capabilities.data.importedReference.activeRoles}. Реальные model ID выбираются только из текущего server catalog.` : "Проверяю каталог ролей…"}</Text>
         </Ai40Card>
+
+        {capabilities.data ? (
+          <Ai40Card style={styles.referenceCard}>
+            <StatusPill label={`${capabilities.data.importedArchives.length} ZIP-импорта`} tone="neutral" />
+            <Text style={styles.referenceTitle}>Архивы сохранены как ссылки на вложения</Text>
+            {capabilities.data.importedArchives.map((archive) => (
+              <View style={styles.archiveRow} key={archive.file}>
+                <View style={styles.archiveCopy}>
+                  <Text style={styles.archiveTitle}>{archive.title}</Text>
+                  <Text style={styles.archiveMeta}>{archive.files.toLocaleString("ru-RU")} файл(а/ов) · SHA-256 сохранён в манифесте</Text>
+                </View>
+                <StatusPill label="В чате" tone="neutral" />
+              </View>
+            ))}
+            <Text style={styles.referenceText}>Оригиналы остаются вложениями чата. Они не запускаются, не распаковываются поверх рабочего кода и не дают автоматический доступ к внешним сервисам.</Text>
+          </Ai40Card>
+        ) : null}
 
         <Ai40Card style={styles.formCard}>
           <Text style={styles.label}>Цель задачи</Text>
-          <TextInput
-            value={goal}
-            onChangeText={setGoal}
-            multiline
-            style={styles.input}
-            placeholder="Опишите цель"
-            placeholderTextColor="#7886A8"
-            textAlignVertical="top"
-            editable={!createRunbook.isPending && !runPanel.isPending}
-          />
-
+          <TextInput value={goal} onChangeText={setGoal} multiline style={styles.input} placeholder="Опишите цель" placeholderTextColor="#7886A8" textAlignVertical="top" editable={!createRunbook.isPending && !runPanel.isPending} />
           <Text style={styles.label}>Режим панели</Text>
           <View style={styles.intentRow}>
             {INTENTS.map((item) => (
-              <Pressable
-                key={item.id}
-                accessibilityRole="button"
-                onPress={() => setIntent(item.id)}
-                style={({ pressed }) => [styles.intentChip, intent === item.id && styles.intentChipActive, pressed && styles.intentChipPressed]}
-              >
+              <Pressable key={item.id} accessibilityRole="button" onPress={() => setIntent(item.id)} style={({ pressed }) => [styles.intentChip, intent === item.id && styles.intentChipActive, pressed && styles.intentChipPressed]}>
                 <Text style={[styles.intentText, intent === item.id && styles.intentTextActive]}>{item.label}</Text>
               </Pressable>
             ))}
           </View>
-
           <Text style={styles.label}>Контекст для анализа — необязательно</Text>
-          <TextInput
-            value={context}
-            onChangeText={setContext}
-            multiline
-            maxLength={12_000}
-            style={styles.contextInput}
-            placeholder="Вставьте фрагмент кода, лог ошибки или публичный URL. Это недоверенный контекст."
-            placeholderTextColor="#7886A8"
-            textAlignVertical="top"
-            editable={!runPanel.isPending}
-          />
+          <TextInput value={context} onChangeText={setContext} multiline maxLength={12_000} style={styles.contextInput} placeholder="Вставьте фрагмент кода, лог ошибки или публичный URL. Это недоверенный контекст." placeholderTextColor="#7886A8" textAlignVertical="top" editable={!runPanel.isPending} />
           <Text style={styles.hint}>Runbook создаёт быстрый план без LLM-вызовов. Полный запуск передаёт на сервер только цель и контекст после вашего подтверждения.</Text>
           <PrimaryButton label={createRunbook.isPending ? "Создаю runbook…" : "Создать runbook"} onPress={() => { void buildRunbook(); }} icon="smart-toy" disabled={createRunbook.isPending || runPanel.isPending} />
           <PrimaryButton label={runPanel.isPending ? "Панель анализирует…" : "Запустить анализ из 10 ролей"} onPress={requestPanelRun} icon="auto-awesome" disabled={runPanel.isPending || createRunbook.isPending} />
@@ -157,10 +147,7 @@ export default function AgentScreen() {
               {runbook.blockedReason ? <Text style={styles.blockedReason}>{runbook.blockedReason}</Text> : null}
               {runbook.steps.map((step) => (
                 <View style={styles.step} key={`${step.index}-${step.tool.id}`}>
-                  <View style={styles.stepTop}>
-                    <StatusPill label={`${step.index}. ${step.tool.label}`} tone={runbookTone(step.status)} />
-                    <Text style={styles.stepStatus}>{step.status.replaceAll("_", " ")}</Text>
-                  </View>
+                  <View style={styles.stepTop}><StatusPill label={`${step.index}. ${step.tool.label}`} tone={runbookTone(step.status)} /><Text style={styles.stepStatus}>{step.status.replaceAll("_", " ")}</Text></View>
                   <Text style={styles.stepPurpose}>{step.purpose}</Text>
                   <Text style={styles.stepMeta}>Risk: {step.tool.risk} · Evidence: {step.tool.evidence}</Text>
                   <Text style={styles.stepMeta}>Ограничение: {step.tool.limit}</Text>
@@ -179,17 +166,20 @@ export default function AgentScreen() {
               <Text style={styles.resultTitle}>{panel.blocked ? panel.blockedReason : "Роли завершили независимый анализ. Этот результат не означает, что команды уже запущены, файлы изменены или APK собран."}</Text>
               {panel.roles.map((role) => (
                 <View style={styles.step} key={`${role.id}-${role.model ?? "none"}`}>
-                  <View style={styles.stepTop}>
-                    <StatusPill label={role.title} tone={roleTone(role.status)} />
-                    <Text style={styles.stepStatus}>{role.model ?? "нет модели"}</Text>
-                  </View>
+                  <View style={styles.stepTop}><StatusPill label={role.title} tone={roleTone(role.status)} /><Text style={styles.stepStatus}>{role.model ?? "нет модели"} · {role.priority}</Text></View>
                   <Text style={styles.stepPurpose}>{role.content}</Text>
+                  <Text style={styles.evidenceText}>{role.evidence.join(" ")}</Text>
                 </View>
               ))}
-              <View style={styles.synthesisBox}>
-                <Text style={styles.synthesisLabel}>Итоговый синтез</Text>
-                <Text style={styles.synthesisText}>{panel.synthesis}</Text>
+              <View style={styles.gateBox}>
+                <View style={styles.stepTop}><Text style={styles.synthesisLabel}>Quality gate</Text><StatusPill label={panel.qualityGate.status.replaceAll("_", " ")} tone={gateTone(panel.qualityGate.status)} /></View>
+                <Text style={styles.gateText}>Уверенность: {panel.qualityGate.confidence} · успешных ролей: {panel.qualityGate.completedRoles}/10</Text>
+                <Text style={styles.gateText}>{panel.qualityGate.nextStep}</Text>
+                {panel.qualityGate.failedRoles.length ? <Text style={styles.gateText}>Недоступны: {panel.qualityGate.failedRoles.join(", ")}</Text> : null}
+                {panel.qualityGate.missingPrimaryRoles.length ? <Text style={styles.gateText}>Требуют повтора: {panel.qualityGate.missingPrimaryRoles.join(", ")}</Text> : null}
+                <Text style={styles.gateText}>{panel.qualityGate.approvalRequired}</Text>
               </View>
+              <View style={styles.synthesisBox}><Text style={styles.synthesisLabel}>Итоговый синтез</Text><Text style={styles.synthesisText}>{panel.synthesis}</Text></View>
               <Text style={styles.executionNote}>Статус: {panel.execution === "analysis_only" ? "только анализ; выполнение не запускалось" : panel.execution}</Text>
             </Ai40Card>
           </View>
@@ -207,6 +197,10 @@ const styles = StyleSheet.create({
   referenceCard: { gap: 7, backgroundColor: "#F7F7FB", borderColor: "#DFE1EB" },
   referenceTitle: { color: palette.ink, fontSize: 14, fontWeight: "800" },
   referenceText: { color: palette.muted, fontSize: 12, lineHeight: 18 },
+  archiveRow: { flexDirection: "row", gap: 10, alignItems: "center", borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: palette.line, paddingTop: 9 },
+  archiveCopy: { flex: 1, gap: 2 },
+  archiveTitle: { color: palette.ink, fontSize: 12, fontWeight: "800" },
+  archiveMeta: { color: palette.muted, fontSize: 10, lineHeight: 15 },
   formCard: { gap: 10 },
   label: { color: palette.ink, fontSize: 13, fontWeight: "800" },
   input: { minHeight: 112, borderWidth: 1, borderColor: palette.line, borderRadius: 14, backgroundColor: "#FAFAFC", color: palette.ink, padding: 12, fontSize: 13, lineHeight: 19 },
@@ -229,8 +223,11 @@ const styles = StyleSheet.create({
   stepTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 },
   stepStatus: { color: palette.muted, fontSize: 10, fontWeight: "700", flexShrink: 1, textAlign: "right" },
   stepPurpose: { color: palette.ink, fontSize: 13, fontWeight: "700", lineHeight: 18 },
+  evidenceText: { color: palette.muted, fontSize: 10, lineHeight: 15 },
   stepMeta: { color: palette.muted, fontSize: 11, lineHeight: 16 },
   constraint: { color: palette.muted, fontSize: 11, lineHeight: 16 },
+  gateBox: { marginTop: 3, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: palette.line, paddingTop: 12, gap: 6 },
+  gateText: { color: palette.muted, fontSize: 11, lineHeight: 16 },
   synthesisBox: { marginTop: 3, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: palette.line, paddingTop: 12, gap: 5 },
   synthesisLabel: { color: palette.indigo, fontSize: 12, fontWeight: "800" },
   synthesisText: { color: palette.ink, fontSize: 13, lineHeight: 19 },
