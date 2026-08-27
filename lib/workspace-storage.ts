@@ -34,6 +34,7 @@ export type WorkspaceMaterial = {
 export type WorkspaceSettings = {
   sendSelectedContext: boolean;
   compactReplies: boolean;
+  offlineMode: boolean;
 };
 
 const KEYS = {
@@ -45,6 +46,7 @@ const KEYS = {
 const DEFAULT_SETTINGS: WorkspaceSettings = {
   sendSelectedContext: false,
   compactReplies: false,
+  offlineMode: false,
 };
 
 const TEXT_EXTENSIONS = new Set(["txt", "md", "markdown", "json", "js", "ts", "tsx", "jsx", "py", "java", "kt", "swift", "go", "rs", "css", "html", "yml", "yaml", "toml", "sql"]);
@@ -173,7 +175,8 @@ export async function removeMaterial(idToRemove: string) {
 }
 
 export async function getSettings() {
-  return readJson<WorkspaceSettings>(KEYS.settings, DEFAULT_SETTINGS);
+  const stored = await readJson<Partial<WorkspaceSettings>>(KEYS.settings, DEFAULT_SETTINGS);
+  return { ...DEFAULT_SETTINGS, ...stored };
 }
 
 export async function saveSettings(settings: WorkspaceSettings) {

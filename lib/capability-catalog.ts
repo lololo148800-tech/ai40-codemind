@@ -33,6 +33,7 @@ export const CAPABILITY_SECTIONS: CapabilitySection[] = [
       { id: "review", title: "Локальный code review", description: "Проверьте вставленный код без запуска, доступа к файлам или сети.", icon: "fact-check", color: "#0F9E88", state: "ready", stateLabel: "Готово", route: "/agent" },
       { id: "test-lab", title: "Test Lab", description: "Готовьте CI runbook и разбирайте вставленные логи тестов, типов и линтера.", icon: "playlist-add-check", color: "#D97706", state: "ready", stateLabel: "Готово", route: "/test-lab" },
       { id: "memory", title: "Память агента", description: "Сохраняйте собственные факты о проекте с изоляцией по аккаунту.", icon: "psychology", color: "#9C3DB1", state: "ready", stateLabel: "Готово", route: "/memory" },
+      { id: "offline", title: "Офлайн-режим", description: "История, материалы и локальный review/fallback работают без серверного запроса.", icon: "offline-bolt", color: "#0F9E88", state: "ready", stateLabel: "Готово", route: "/settings" },
     ],
   },
   {

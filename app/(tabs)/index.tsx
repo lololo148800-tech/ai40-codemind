@@ -7,6 +7,7 @@ import { Alert, FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet,
 import { Ai40Card, IconAction, palette, StatusPill } from "@/components/ai40-ui";
 import { ScreenContainer } from "@/components/screen-container";
 import { trpc } from "@/lib/trpc";
+import { buildOfflineResponse } from "@/lib/offline-assistant";
 import { appendMessages, clearMessages, composeMaterialContext, getSettings, listMaterials, listMessages, type AssistantMode, type ChatMessage, type WorkspaceMaterial, type WorkspaceSettings } from "@/lib/workspace-storage";
 
 const MODES: { id: AssistantMode; label: string; icon: React.ComponentProps<typeof MaterialIcons>["name"] }[] = [
@@ -34,7 +35,7 @@ export default function AssistantScreen() {
   const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [materials, setMaterials] = useState<WorkspaceMaterial[]>([]);
-  const [settings, setSettings] = useState<WorkspaceSettings>({ sendSelectedContext: false, compactReplies: false });
+  const [settings, setSettings] = useState<WorkspaceSettings>({ sendSelectedContext: false, compactReplies: false, offlineMode: false });
   const chatMutation = trpc.assistant.chat.useMutation();
 
   const refreshWorkspace = useCallback(async () => {
@@ -56,7 +57,7 @@ export default function AssistantScreen() {
   const submit = async () => {
     const message = draft.trim();
     if (!message || chatMutation.isPending) return;
-    if (selectedContext && !settings.sendSelectedContext) {
+    if (selectedContext && !settings.sendSelectedContext && !settings.offlineMode) {
       Alert.alert("Нужно разрешение", "Вы отметили материалы для контекста. Включите передачу выбранного контекста в настройках, чтобы отправить их вместе с запросом.", [
         { text: "Отмена", style: "cancel" },
         { text: "Настройки", onPress: () => router.push("/settings" as never) },
@@ -70,6 +71,12 @@ export default function AssistantScreen() {
     setDraft("");
 
     try {
+      if (settings.offlineMode) {
+        const assistantMessage = makeMessage("assistant", buildOfflineResponse({ message, mode, selectedMaterialCount, cause: "manual" }), mode, { model: "AI40 Offline", blocked: false });
+        const persisted = await appendMessages([userMessage, assistantMessage]);
+        setMessages(persisted);
+        return;
+      }
       const result = await chatMutation.mutateAsync({
         mode,
         message,
@@ -80,8 +87,8 @@ export default function AssistantScreen() {
       const persisted = await appendMessages([userMessage, assistantMessage]);
       setMessages(persisted);
     } catch {
-      const failedMessage = makeMessage("assistant", "Не удалось связаться с ИИ-сервисом. Проверьте интернет-соединение и повторите запрос.", mode, { blocked: false });
-      const persisted = await appendMessages([userMessage, failedMessage]);
+      const fallbackMessage = makeMessage("assistant", buildOfflineResponse({ message, mode, selectedMaterialCount, cause: "network" }), mode, { model: "AI40 Offline", blocked: false });
+      const persisted = await appendMessages([userMessage, fallbackMessage]);
       setMessages(persisted);
     }
   };
@@ -134,10 +141,10 @@ export default function AssistantScreen() {
               <Ai40Card style={styles.contextCard}>
                 <View style={styles.contextIcon}><MaterialIcons name="shield" size={19} color={palette.teal} /></View>
                 <View style={styles.contextCopy}>
-                  <Text style={styles.contextTitle}>{selectedMaterialCount ? `Выбрано материалов: ${selectedMaterialCount}` : "Контекст под контролем"}</Text>
-                  <Text style={styles.contextText}>{selectedMaterialCount ? (settings.sendSelectedContext ? "Выбранный текст будет добавлен к следующему запросу." : "Передача материалов выключена в настройках.") : "Добавьте небольшие текстовые файлы в библиотеку, чтобы использовать их по вашему выбору."}</Text>
+                  <Text style={styles.contextTitle}>{settings.offlineMode ? "Офлайн-режим активен" : selectedMaterialCount ? `Выбрано материалов: ${selectedMaterialCount}` : "Контекст под контролем"}</Text>
+                  <Text style={styles.contextText}>{settings.offlineMode ? "Сообщения, история и локальный Code Review остаются на устройстве. Серверный запрос не выполняется." : selectedMaterialCount ? (settings.sendSelectedContext ? "Выбранный текст будет добавлен к следующему запросу." : "Передача материалов выключена в настройках.") : "Добавьте небольшие текстовые файлы в библиотеку, чтобы использовать их по вашему выбору."}</Text>
                 </View>
-                <StatusPill label={selectedMaterialCount && settings.sendSelectedContext ? "Разрешено" : "Локально"} tone={selectedMaterialCount && settings.sendSelectedContext ? "ready" : "neutral"} />
+                <StatusPill label={settings.offlineMode ? "Офлайн" : selectedMaterialCount && settings.sendSelectedContext ? "Разрешено" : "Локально"} tone={settings.offlineMode || selectedMaterialCount && settings.sendSelectedContext ? "ready" : "neutral"} />
               </Ai40Card>
             </View>
           )}
@@ -183,7 +190,7 @@ export default function AssistantScreen() {
               <MaterialIcons name="arrow-upward" size={22} color="#FFFFFF" />
             </Pressable>
           </View>
-          <Text style={styles.composerHint}>ИИ не выполняет внешние действия автоматически.</Text>
+          <Text style={styles.composerHint}>{settings.offlineMode ? "Офлайн: сервер и внешние действия отключены." : "ИИ не выполняет внешние действия автоматически."}</Text>
         </KeyboardAvoidingView>
       </View>
     </ScreenContainer>

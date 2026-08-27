@@ -9,7 +9,7 @@ import { clearWorkspaceData, getSettings, saveSettings, type WorkspaceSettings }
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const [settings, setSettings] = useState<WorkspaceSettings>({ sendSelectedContext: false, compactReplies: false });
+  const [settings, setSettings] = useState<WorkspaceSettings>({ sendSelectedContext: false, compactReplies: false, offlineMode: false });
 
   const refresh = useCallback(async () => setSettings(await getSettings()), []);
   useFocusEffect(useCallback(() => { void refresh(); }, [refresh]));
@@ -40,6 +40,8 @@ export default function SettingsScreen() {
             <View style={styles.settingRow}><View style={styles.settingCopy}><Text style={styles.settingTitle}>Передавать выбранный контекст</Text><Text style={styles.settingText}>Когда включено, текст материалов, которые вы отметили в библиотеке, добавляется к следующему сообщению ассистенту.</Text></View><Switch value={settings.sendSelectedContext} onValueChange={(value) => { void update({ ...settings, sendSelectedContext: value }); }} trackColor={{ false: "#D9DDE9", true: "#B8B5FF" }} thumbColor={settings.sendSelectedContext ? palette.indigo : "#FFFFFF"} /></View>
             <View style={styles.divider} />
             <View style={styles.settingRow}><View style={styles.settingCopy}><Text style={styles.settingTitle}>Компактные ответы</Text><Text style={styles.settingText}>Сохраняет это предпочтение для следующих обновлений интерфейса и режимов ответа.</Text></View><Switch value={settings.compactReplies} onValueChange={(value) => { void update({ ...settings, compactReplies: value }); }} trackColor={{ false: "#D9DDE9", true: "#B8B5FF" }} thumbColor={settings.compactReplies ? palette.indigo : "#FFFFFF"} /></View>
+            <View style={styles.divider} />
+            <View style={styles.settingRow}><View style={styles.settingCopy}><Text style={styles.settingTitle}>Офлайн-режим</Text><Text style={styles.settingText}>Не отправляет чат на сервер. На устройстве остаются история, материалы, чек-листы и локальный Code Review/Test Lab fallback.</Text></View><Switch value={settings.offlineMode} onValueChange={(value) => { void update({ ...settings, offlineMode: value }); }} trackColor={{ false: "#D9DDE9", true: "#8CE2D0" }} thumbColor={settings.offlineMode ? palette.teal : "#FFFFFF"} /></View>
           </Ai40Card>
         </View>
 
@@ -66,6 +68,11 @@ export default function SettingsScreen() {
             <Text style={styles.infoTitle}>AI40 Gateway и Telegram</Text>
             <Text style={styles.infoText}>Проверьте режим вычислений и безопасную готовность Telegram Mini App. Ключи провайдеров и токен бота не попадают в приложение.</Text>
             <Pressable accessibilityRole="button" onPress={() => router.push("/infrastructure")} style={({ pressed }) => [styles.accessButton, pressed && styles.accessButtonPressed]}><Text style={styles.accessButtonText}>Открыть статус</Text></Pressable>
+          </Ai40Card>
+          <Ai40Card style={styles.infoCard}>
+            <StatusPill label="Health + recovery" tone="ready" />
+            <Text style={styles.infoTitle}>Доступность AI40</Text>
+            <Text style={styles.infoText}>Сервер отвечает на `/api/health` без ключей и данных пользователя. Если сервис временно недоступен, чат сохраняет локальный fallback; после возвращения сети новые запросы снова используют AI40 Gateway.</Text>
           </Ai40Card>
         </View>
 
