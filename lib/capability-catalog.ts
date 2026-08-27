@@ -31,6 +31,7 @@ export const CAPABILITY_SECTIONS: CapabilitySection[] = [
       { id: "files", title: "Файлы и материалы", description: "Добавляйте контекст, заметки и reference-материалы для задач.", icon: "attach-file", color: "#2563EB", state: "ready", stateLabel: "Готово", route: "/materials" },
       { id: "agent", title: "Agent Runbook", description: "10 ролей, критик, план, quality gate и проверяемый runtime.", icon: "hub", color: "#4F46E5", state: "ready", stateLabel: "Готово", route: "/agent" },
       { id: "review", title: "Локальный code review", description: "Проверьте вставленный код без запуска, доступа к файлам или сети.", icon: "fact-check", color: "#0F9E88", state: "ready", stateLabel: "Готово", route: "/agent" },
+      { id: "test-lab", title: "Test Lab", description: "Готовьте CI runbook и разбирайте вставленные логи тестов, типов и линтера.", icon: "playlist-add-check", color: "#D97706", state: "ready", stateLabel: "Готово", route: "/test-lab" },
       { id: "memory", title: "Память агента", description: "Сохраняйте собственные факты о проекте с изоляцией по аккаунту.", icon: "psychology", color: "#9C3DB1", state: "ready", stateLabel: "Готово", route: "/memory" },
     ],
   },

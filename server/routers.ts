@@ -11,6 +11,7 @@ import { importPublicGithubManifest } from "./github-manifest";
 import { IMPORTED_ARCHIVES, IMPORTED_PROFILE_REFERENCE, PANEL_ROLE_DEFINITIONS, runMultiAgentPanel } from "./multi-agent";
 import { resolveAI40InferenceRuntime } from "./_core/llm";
 import { getTelegramIntegrationStatus } from "./telegram-ready";
+import { analyzeTestLog, buildTestPlan, TEST_TARGETS } from "./test-lab";
 import { COOKIE_NAME } from "../shared/const.js";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -96,6 +97,10 @@ export const appRouter = router({
       history: assistantHistorySchema.optional(),
       context: z.string().max(12_000).optional(),
     })).mutation(({ input }) => askAssistant(input)),
+  }),
+  testLab: router({
+    plan: protectedProcedure.input(z.object({ target: z.enum(TEST_TARGETS), goal: z.string().trim().max(500).optional() }).strict()).mutation(({ input }) => buildTestPlan(input)),
+    analyzeLog: protectedProcedure.input(z.object({ log: z.string().min(1).max(20_000) }).strict()).mutation(({ input }) => analyzeTestLog(input.log)),
   }),
   agent: router({
     createRunbook: publicProcedure.input(z.object({
