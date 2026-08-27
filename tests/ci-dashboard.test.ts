@@ -23,7 +23,9 @@ describe("AI40 CI dashboard", () => {
   it("creates an approval-first GitHub connection plan", () => {
     const plan = buildCiConnectionPlan("https://github.com/owner/repo");
     expect(plan.repositoryUrl).toBe("https://github.com/owner/repo");
-    expect(plan.approvalRequired).toContain("подтверждения");
+    expect(plan.accessPath).toContain("Официальный GitHub connector");
+    expect(plan.approvalRequired).toContain("подтверждений");
+    expect(plan.boundary).toContain("personal access token");
   });
 
   it("normalizes public GitHub workflow evidence without dispatching a run", async () => {

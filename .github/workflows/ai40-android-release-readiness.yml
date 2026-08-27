@@ -1,0 +1,42 @@
+name: AI40 Android release readiness
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Why production signing readiness is being checked"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  release-readiness:
+    name: Validate production-signing prerequisites
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+    steps:
+      - name: Validate protected signing configuration
+        shell: bash
+        run: |
+          missing=0
+          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+            if [ -z "${!name}" ]; then
+              echo "::error title=Missing release configuration::Required protected signing value is not configured: ${name}"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "Release APK was not built. Add the protected values through GitHub Secrets, then re-run this manual check."
+            exit 1
+          fi
+          echo "Protected release-signing configuration is present. No APK is built by this readiness workflow."
+
+# Deliberately does not decode a keystore, build an APK, publish a release, or print secrets.
+# A reviewed release-build workflow must be added only after this readiness check is green.

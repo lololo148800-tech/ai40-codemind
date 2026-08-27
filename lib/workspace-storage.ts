@@ -16,6 +16,8 @@ export type ChatMessage = {
   mode: AssistantMode;
   createdAt: string;
   model?: string;
+  profile?: string;
+  profileLabel?: string;
   blocked?: boolean;
 };
 

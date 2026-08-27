@@ -14,6 +14,7 @@ describe("AI40 mobile build assets", () => {
     REQUIRED_ASSETS.forEach((path) => {
       expect(lstatSync(path).isSymbolicLink(), `${path} must be a regular file`).toBe(false);
       expect(readFileSync(path).subarray(0, 8).toString("hex"), `${path} must be a PNG`).toBe("89504e470d0a1a0a");
+      expect(lstatSync(path).size, `${path} must remain under the checkpoint media limit`).toBeLessThan(1_000_000);
     });
   });
 });

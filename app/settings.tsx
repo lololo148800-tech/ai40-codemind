@@ -59,6 +59,12 @@ export default function SettingsScreen() {
             <Text style={styles.infoText}>Сохраняйте короткие факты о проекте, которые агент сможет найти только по вашей задаче. Записи принадлежат вашему аккаунту и не являются системными инструкциями.</Text>
             <Pressable accessibilityRole="button" onPress={() => router.push("/memory")} style={({ pressed }) => [styles.accessButton, pressed && styles.accessButtonPressed]}><Text style={styles.accessButtonText}>Управлять памятью</Text></Pressable>
           </Ai40Card>
+          <Ai40Card style={styles.infoCard}>
+            <StatusPill label="Owner-admin" tone="neutral" />
+            <Text style={styles.infoTitle}>AutoImprove Lab</Text>
+            <Text style={styles.infoText}>Подготовьте проверяемый план улучшения AI40: risk review, кандидатный diff и CI evidence. Открытие доступно только owner-admin; приложение не меняет и не публикует себя автоматически.</Text>
+            <Pressable accessibilityRole="button" onPress={() => router.push("/auto-improve")} style={({ pressed }) => [styles.accessButton, pressed && styles.accessButtonPressed]}><Text style={styles.accessButtonText}>Открыть AutoImprove Lab</Text></Pressable>
+          </Ai40Card>
         </View>
 
         <View>

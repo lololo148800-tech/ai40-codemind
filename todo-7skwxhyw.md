@@ -94,12 +94,49 @@
 - [x] Проверить доступность GitHub Actions и зафиксировать evidence первого workflow run.
 - [x] Усилить каталог agent-функций и статусы реального исполнения без копирования закрытых реализаций.
 - [x] Прогнать проверки, сохранить checkpoint и передать GitHub-результат.
-- [ ] Оценить устойчивый cloud-hosting, Android background limits и реалистичные offline-возможности.
-- [ ] Запустить GitHub Actions debug APK workflow и проверить его evidence/артефакт.
-- [ ] Реализовать offline-first локальный режим для памяти, draft, code review и Test Lab без сети.
-- [ ] Добавить health-check и recovery runbook без ложной гарантии бесконечной работы.
-- [ ] Прогнать регрессии, сохранить checkpoint и передать APK/offline результат.
-- [ ] Запустить GitHub Actions debug APK workflow и собрать проверяемый artifact evidence.
-- [ ] Спроектировать offline-first контур памяти, drafts, code review и Test Lab без сети.
-- [ ] Реализовать локальный offline-first режим, health endpoint и recovery UX без платного 24/7 hosting.
-- [ ] Проверить APK evidence, offline UX, полную регрессию и сохранить checkpoint.
+- [x] Оценить устойчивый cloud-hosting, Android background limits и реалистичные offline-возможности.
+- [x] Запустить GitHub Actions debug APK workflow и проверить его evidence/артефакт.
+- [x] Реализовать offline-first локальный режим для памяти, draft, code review и Test Lab без сети.
+- [x] Добавить health-check и recovery runbook без ложной гарантии бесконечной работы.
+- [x] Прогнать регрессии, сохранить checkpoint и передать APK/offline результат.
+- [x] Запустить GitHub Actions debug APK workflow и собрать проверяемый artifact evidence.
+- [x] Спроектировать offline-first контур памяти, drafts, code review и Test Lab без сети.
+- [x] Реализовать локальный offline-first режим, health endpoint и recovery UX без платного 24/7 hosting.
+- [x] Проверить APK evidence, offline UX, полную регрессию и сохранить checkpoint.
+- [x] Устранить блокировку checkpoint крупных icon assets без потери мобильного брендинга.
+- [x] Спроектировать AI Studio для кода, сайтов, ботов, приложений, медиа, research и AI-проектов.
+- [x] Реализовать task routing и честные fresh-data connector requests для GitHub, сайтов и социальных сервисов.
+- [x] Добавить проверяемые контракты media/code workflows и статусы реального исполнения.
+- [x] Прогнать регрессии, сохранить checkpoint и передать обновление AI Studio.
+- [x] Спроектировать Link Explorer с ограниченным обходом публичных URL и защитой от SSRF, циклов и приватных адресов.
+- [x] Реализовать server-side анализ ссылки, извлечение ссылок и schema validation для controlled link trail.
+- [x] Добавить мобильный экран Link Explorer и статусы для GitHub, Google, Manus и закрытых сайтов.
+- [x] Проверить лимиты, обработку ошибок, typecheck/tests и сохранить checkpoint.
+- [x] Спроектировать AI Studio, task routing и честные connector-статусы для кода, web, ботов, приложений, медиа и research.
+- [x] Реализовать AI Studio с action cards и готовыми workflow briefs без ложного запуска не подключённых сервисов.
+- [x] Добавить connector-status центр и safe fresh-data access requests для GitHub, браузера, Google, Manus и соцсетей.
+- [x] Добавить тесты маршрутизации/статусов, прогнать регрессии и сохранить checkpoint AI Studio.
+- [x] Спроектировать owner-admin AutoImprove Lab, роль-доступ и границы self-improvement без авто-merge/deploy.
+- [x] Реализовать adaptive chat profiles и server-side improvement plan с risk review и CI evidence contract.
+- [x] Добавить owner-admin экран AutoImprove Lab с кандидатным планом и явным approval-only статусом.
+- [x] Добавить access/policy/profile tests, прогнать регрессии и сохранить checkpoint.
+- [x] Спроектировать owner-admin candidate queue, CI evidence и безопасные границы GitHub connection flow.
+- [x] Реализовать локальную очередь candidate improvements и evidence-first статусы без auto-merge/deploy.
+- [x] Добавить GitHub connection flow и понятное руководство полной конфигурации AI40 без ключей в чате.
+- [x] Проверить access boundaries, CI evidence, регрессии и сохранить checkpoint.
+- [x] Спроектировать reviewable Diff Review, owner-admin decision states и GitHub connection boundaries.
+- [x] Реализовать Diff Review с files/risks/tests и явным решением без auto-apply/merge.
+- [x] Добавить GitHub connection flow и понятные инструкции безопасного OAuth-доступа.
+- [x] Проверить review states, access boundary, регрессии и сохранить checkpoint.
+- [x] Спроектировать привязку AutoImprove candidate к GitHub CI evidence и production-signing boundaries.
+- [x] Реализовать хранение CI evidence в candidate queue и безопасный signing runbook.
+- [x] Проверить GitHub connector readiness и production workflow contract.
+- [x] Сохранить checkpoint CI evidence и release preparation.
+- [ ] Проверить авторизацию GitHub и доступ к приватному AI40 CodeMind repository.
+- [ ] Подготовить защищённые Android signing-материалы и repository secrets при доступных правах.
+- [ ] Добавить reviewed release workflow без автоматической публикации в Google Play.
+- [ ] Проверить release readiness, регрессии и сохранить checkpoint.
+- [x] Проанализировать Android crash после splash и текущий стартовый интерфейс AI40.
+- [x] Исправить crash root cause и укрепить Android startup без внешних ключей.
+- [x] Переработать первый экран в качественный portrait-first AI40 CodeMind UX.
+- [ ] Собрать и проверить новый debug APK workflow, typecheck, lint и тесты.

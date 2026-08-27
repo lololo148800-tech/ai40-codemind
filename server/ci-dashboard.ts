@@ -59,12 +59,14 @@ export function buildCiConnectionPlan(repositoryUrl: string) {
   const { canonicalUrl } = parsePublicGithubUrl(repositoryUrl);
   return {
     repositoryUrl: canonicalUrl,
+    accessPath: "Официальный GitHub connector → owner-authorized repository access → GitHub Actions evidence" as const,
     steps: [
-      "Зеркалировать или создать репозиторий в GitHub.",
-      "Проверить, что .github/workflows/ai40-quality-gate.yml попал в ветку main.",
-      "Открыть pull request или вручную запустить workflow в GitHub Actions.",
-      "Открыть CI Dashboard в AI40 и сверить run, commit SHA, exit code и артефакты.",
+      "Включить официальный GitHub connector и пройти OAuth в защищённом GitHub flow — не вставлять PAT, пароль или OAuth code в AI40.",
+      "Выбрать только нужный репозиторий и проверить, что .github/workflows/ai40-quality-gate.yml есть в ветке main.",
+      "Открыть pull request или вручную запустить workflow на стороне GitHub Actions.",
+      "Открыть CI Dashboard в AI40 и сверить run URL, commit SHA, status/conclusion и APK artifact, если он был создан.",
     ],
-    approvalRequired: "Создание pull request, dispatch workflow, запись файлов и Android-сборка требуют отдельного подтверждения в GitHub.",
+    approvalRequired: "Private repository, создание pull request, dispatch workflow, запись файлов, Android-сборка и merge требуют отдельных owner подтверждений в GitHub.",
+    boundary: "AI40 не получает пароль GitHub, personal access token или OAuth code в мобильном клиенте. Публичные runs доступны read-only; private CI требует официальный connector и выбранные владельцем права.",
   };
 }

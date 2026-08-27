@@ -8,6 +8,7 @@ import "react-native-reanimated";
 import { Platform } from "react-native";
 import "@/lib/_core/nativewind-pressable";
 import { ThemeProvider } from "@/lib/theme-provider";
+import { StartupErrorBoundary } from "../components/startup-error-boundary";
 import {
   SafeAreaFrameContext,
   SafeAreaInsetsContext,
@@ -90,6 +91,10 @@ export default function RootLayout() {
             <Stack.Screen name="agent" options={{ presentation: "modal" }} />
             <Stack.Screen name="test-lab" options={{ presentation: "modal" }} />
             <Stack.Screen name="website-analysis" options={{ presentation: "modal" }} />
+            <Stack.Screen name="link-explorer" options={{ presentation: "modal" }} />
+            <Stack.Screen name="ai-studio" options={{ presentation: "modal" }} />
+            <Stack.Screen name="connectors" options={{ presentation: "modal" }} />
+            <Stack.Screen name="auto-improve" options={{ presentation: "modal" }} />
             <Stack.Screen name="settings" options={{ presentation: "modal" }} />
             <Stack.Screen name="oauth/callback" />
           </Stack>
@@ -103,21 +108,25 @@ export default function RootLayout() {
 
   if (shouldOverrideSafeArea) {
     return (
-      <ThemeProvider>
-        <SafeAreaProvider initialMetrics={providerInitialMetrics}>
-          <SafeAreaFrameContext.Provider value={frame}>
-            <SafeAreaInsetsContext.Provider value={insets}>
-              {content}
-            </SafeAreaInsetsContext.Provider>
-          </SafeAreaFrameContext.Provider>
-        </SafeAreaProvider>
-      </ThemeProvider>
+      <StartupErrorBoundary>
+        <ThemeProvider>
+          <SafeAreaProvider initialMetrics={providerInitialMetrics}>
+            <SafeAreaFrameContext.Provider value={frame}>
+              <SafeAreaInsetsContext.Provider value={insets}>
+                {content}
+              </SafeAreaInsetsContext.Provider>
+            </SafeAreaFrameContext.Provider>
+          </SafeAreaProvider>
+        </ThemeProvider>
+      </StartupErrorBoundary>
     );
   }
 
   return (
-    <ThemeProvider>
-      <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
-    </ThemeProvider>
+    <StartupErrorBoundary>
+      <ThemeProvider>
+        <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
+      </ThemeProvider>
+    </StartupErrorBoundary>
   );
 }

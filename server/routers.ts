@@ -10,6 +10,9 @@ import * as db from "./db";
 import { importPublicGithubManifest } from "./github-manifest";
 import { buildCiConnectionPlan, fetchPublicCiRuns } from "./ci-dashboard";
 import { inspectPublicWebsite } from "./website-analysis";
+import { explorePublicLinkTrail, MAX_LINK_DEPTH } from "./link-explorer";
+import { buildConnectorAccessPlan, CONNECTOR_PROVIDERS, listConnectorStatuses } from "./connector-plans";
+import { AUTO_IMPROVEMENT_AREAS, buildAutoImprovementPlan } from "./auto-improve";
 import { IMPORTED_ARCHIVES, IMPORTED_PROFILE_REFERENCE, PANEL_ROLE_DEFINITIONS, runMultiAgentPanel } from "./multi-agent";
 import { resolveAI40InferenceRuntime } from "./_core/llm";
 import { getTelegramIntegrationStatus } from "./telegram-ready";
@@ -17,7 +20,7 @@ import { analyzeTestLog, buildTestPlan, TEST_TARGETS } from "./test-lab";
 import { COOKIE_NAME } from "../shared/const.js";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { adminProcedure, protectedProcedure, publicProcedure, router } from "./_core/trpc";
 
 const assistantModeSchema = z.enum(["question", "research", "code", "create"]);
 const assistantHistorySchema = z.array(z.object({
@@ -26,6 +29,7 @@ const assistantHistorySchema = z.array(z.object({
 })).max(10);
 const agentIntentSchema = z.enum(["code_review", "bug_hunt", "architecture", "test_plan", "apk_plan"]);
 const multiAgentLimiter = createSlidingWindowLimiter({ maxRequests: 3, windowMs: 60_000 });
+const linkExplorerLimiter = createSlidingWindowLimiter({ maxRequests: 4, windowMs: 60_000 });
 
 async function resolveAgentPrincipal(input: { userId?: number; headers: unknown }) {
   if (input.userId) return { userId: input.userId, limiterKey: `session:${input.userId}` };
@@ -98,6 +102,20 @@ export const appRouter = router({
   }),
   website: router({
     inspectPublic: protectedProcedure.input(z.object({ url: z.string().trim().url().max(1_500) }).strict()).mutation(({ input }) => inspectPublicWebsite(input.url)),
+  }),
+  linkExplorer: router({
+    explore: protectedProcedure.input(z.object({ url: z.string().trim().url().max(1_500), maxDepth: z.number().int().min(0).max(MAX_LINK_DEPTH).default(1) }).strict()).mutation(({ ctx, input }) => {
+      const decision = linkExplorerLimiter.consume(`links:${ctx.user.id || requestIdentity(ctx.req.headers)}`);
+      if (!decision.allowed) throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: `Подождите ${decision.retryAfterSeconds} сек. перед следующим обходом ссылок.` });
+      return explorePublicLinkTrail(input.url, input.maxDepth);
+    }),
+  }),
+  connectors: router({
+    statuses: protectedProcedure.query(() => listConnectorStatuses()),
+    accessPlan: protectedProcedure.input(z.object({ provider: z.enum(CONNECTOR_PROVIDERS), purpose: z.string().trim().min(3).max(300) }).strict()).mutation(({ input }) => buildConnectorAccessPlan(input.provider, input.purpose)),
+  }),
+  admin: router({
+    autoImprovePlan: adminProcedure.input(z.object({ requirement: z.string().trim().min(8).max(1_200), area: z.enum(AUTO_IMPROVEMENT_AREAS) }).strict()).mutation(({ input }) => buildAutoImprovementPlan(input)),
   }),
   assistant: router({
     chat: publicProcedure.input(z.object({

@@ -104,7 +104,7 @@ export default function GithubScreen() {
                 <PrimaryButton label={ciPlan.isPending ? "Готовлю план…" : "План подключения"} icon="fact-check" tone="soft" onPress={() => { void prepareCiPlan(); }} style={styles.ciButton} disabled={!repositoryUrl.trim() || ciPlan.isPending} />
                 <PrimaryButton label={ciRuns.isPending ? "Проверяю…" : "Проверить CI"} icon="sync" onPress={() => { void loadCiRuns(); }} style={styles.ciButton} disabled={!repositoryUrl.trim() || ciRuns.isPending} />
               </View>
-              {ciPlan.data ? <View style={styles.planResult}><StatusPill label="Approval-first" tone="warning" />{ciPlan.data.steps.map((step, index) => <Text style={styles.planStep} key={step}>{index + 1}. {step}</Text>)}<Text style={styles.manifestMeta}>{ciPlan.data.approvalRequired}</Text></View> : null}
+              {ciPlan.data ? <View style={styles.planResult}><StatusPill label="Approval-first" tone="warning" /><Text style={styles.accessPath}>{ciPlan.data.accessPath}</Text>{ciPlan.data.steps.map((step, index) => <Text style={styles.planStep} key={step}>{index + 1}. {step}</Text>)}<Text style={styles.manifestMeta}>{ciPlan.data.approvalRequired}</Text><Text style={styles.ciBoundary}>{ciPlan.data.boundary}</Text></View> : null}
               {ciRuns.data ? <View style={styles.runsResult}><StatusPill label={`CI runs: ${ciRuns.data.runs.length}`} tone="ready" />{ciRuns.data.runs.length === 0 ? <Text style={styles.manifestMeta}>Workflow runs пока не найдены. Добавьте workflow в GitHub-репозиторий и откройте PR или запустите его вручную.</Text> : ciRuns.data.runs.map((run) => <View key={run.id} style={styles.run}><View style={styles.runHead}><Text style={styles.runName}>{run.name}</Text><StatusPill label={run.conclusion === "success" ? "success" : run.conclusion ?? run.status} tone={run.conclusion === "success" ? "ready" : run.status === "completed" ? "warning" : "neutral"} /></View><Text style={styles.manifestMeta}>{run.branch} · {run.headSha} · {run.event}</Text><PrimaryButton label="Открыть run" icon="open-in-new" tone="soft" onPress={() => openSource(run.url)} style={styles.runOpen} /></View>)}<Text style={styles.manifestMeta}>{ciRuns.data.evidenceBoundary}</Text></View> : null}
             </Ai40Card>
             <Text style={styles.listLabel}>Доступные источники · {SOURCES.length}</Text>
@@ -154,7 +154,9 @@ const styles = StyleSheet.create({
   ciButtons: { flexDirection: "row", gap: 8 },
   ciButton: { flex: 1, minHeight: 38, borderRadius: 11, paddingHorizontal: 8 },
   planResult: { gap: 6, paddingTop: 2 },
+  accessPath: { color: palette.teal, fontSize: 12, lineHeight: 17, fontWeight: "800" },
   planStep: { color: palette.ink, fontSize: 12, lineHeight: 18 },
+  ciBoundary: { color: palette.danger, fontSize: 11, lineHeight: 16, paddingTop: 2 },
   runsResult: { gap: 8, paddingTop: 2 },
   run: { gap: 5, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: "#CFEDE7", paddingTop: 9 },
   runHead: { flexDirection: "row", alignItems: "center", gap: 8 },

@@ -30,6 +30,7 @@ export const CAPABILITY_SECTIONS: CapabilitySection[] = [
     items: [
       { id: "files", title: "Файлы и материалы", description: "Добавляйте контекст, заметки и reference-материалы для задач.", icon: "attach-file", color: "#2563EB", state: "ready", stateLabel: "Готово", route: "/materials" },
       { id: "agent", title: "Agent Runbook", description: "10 ролей, критик, план, quality gate и проверяемый runtime.", icon: "hub", color: "#4F46E5", state: "ready", stateLabel: "Готово", route: "/agent" },
+      { id: "ai-studio", title: "AI Studio", description: "Выберите путь для кода, сайтов, ботов, приложений, медиа, research и AI-проекта.", icon: "auto-awesome", color: "#7C3AED", state: "ready", stateLabel: "Готово", route: "/ai-studio" },
       { id: "review", title: "Локальный code review", description: "Проверьте вставленный код без запуска, доступа к файлам или сети.", icon: "fact-check", color: "#0F9E88", state: "ready", stateLabel: "Готово", route: "/agent" },
       { id: "test-lab", title: "Test Lab", description: "Готовьте CI runbook и разбирайте вставленные логи тестов, типов и линтера.", icon: "playlist-add-check", color: "#D97706", state: "ready", stateLabel: "Готово", route: "/test-lab" },
       { id: "memory", title: "Память агента", description: "Сохраняйте собственные факты о проекте с изоляцией по аккаунту.", icon: "psychology", color: "#9C3DB1", state: "ready", stateLabel: "Готово", route: "/memory" },
@@ -66,8 +67,10 @@ export const CAPABILITY_SECTIONS: CapabilitySection[] = [
     caption: "Только с явной настройкой",
     items: [
       { id: "github", title: "GitHub", description: "Просматривайте выбранные репозитории и готовьте quality gates для CI.", icon: "code", color: "#111827", state: "ready", stateLabel: "Готово", route: "/github" },
+      { id: "connectors", title: "Подключения", description: "Проверьте минимальные scopes для GitHub, browser, Google, Manus, Telegram и социальных сервисов.", icon: "settings-input-component", color: "#2563EB", state: "ready", stateLabel: "Готово", route: "/connectors" },
       { id: "gateway", title: "AI40 Gateway", description: "Проверьте self-hosted режим, ключи AI40 и Telegram-ready статус.", icon: "settings-ethernet", color: "#2563EB", state: "setup", stateLabel: "Настройка", route: "/infrastructure" },
       { id: "website-analysis", title: "Анализ публичного сайта", description: "Получите read-only brief по title, description, языку и H1 без входа или изменений.", icon: "travel-explore", color: "#0F9E88", state: "ready", stateLabel: "Готово", route: "/website-analysis" },
+      { id: "link-explorer", title: "Цепочка ссылок", description: "Читайте ограниченные публичные HTML-страницы и переходите по найденным ссылкам с лимитом глубины.", icon: "account-tree", color: "#2563EB", state: "ready", stateLabel: "Готово", route: "/link-explorer" },
       { id: "keys", title: "Ключи доступа", description: "Создавайте и отзывайте AI40 API keys; raw key показывается один раз.", icon: "key", color: "#0F9E88", state: "ready", stateLabel: "Готово", route: "/api-keys" },
       { id: "schedule", title: "Задачи по расписанию", description: "Нужен отдельный persistent worker; приложение не запускает фоновые процессы само.", icon: "schedule", color: "#6B7280", state: "setup", stateLabel: "Нужен worker", nextStep: "Сначала подключите изолированный persistent worker и определите разрешённые действия." },
       { id: "computer", title: "Подключить компьютер", description: "Нужен отдельный trusted device connector с явным доступом и журналом действий.", icon: "desktop-windows", color: "#6B7280", state: "setup", stateLabel: "Нужен connector", nextStep: "Сначала настройте trusted device connector; AI40 не получает доступ к компьютеру по умолчанию." },
