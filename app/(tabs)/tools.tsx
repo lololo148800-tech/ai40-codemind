@@ -5,6 +5,7 @@ import { Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native
 import { Ai40Card, palette, ScreenTitle, SectionTitle, StatusPill } from "@/components/ai40-ui";
 import { ScreenContainer } from "@/components/screen-container";
 import { CAPABILITY_SECTIONS, getCapabilityById, QUICK_CAPABILITY_IDS, type CapabilityItem, type CapabilitySection } from "@/lib/capability-catalog";
+import { EXECUTION_STATUS, type ExecutionStatus } from "@/lib/execution-status";
 
 function stateTone(state: CapabilityItem["state"]): "ready" | "warning" | "neutral" {
   if (state === "ready") return "ready";
@@ -48,6 +49,15 @@ export default function ToolsScreen() {
       </View>
     </View>
   );
+  const renderExecutionStatus = ({ item }: { item: ExecutionStatus }) => (
+    <Pressable accessibilityRole="button" onPress={() => item.route ? router.push(item.route as never) : undefined} style={({ pressed }) => [styles.statusPressable, pressed && styles.pressed]}>
+      <Ai40Card style={styles.statusCard}>
+        <View style={styles.statusRail} />
+        <View style={styles.statusCopy}><View style={styles.titleRow}><Text style={styles.statusTitle}>{item.title}</Text><StatusPill label={item.label} tone={item.tone} /></View><Text style={styles.statusDetail}>{item.detail}</Text>{item.evidenceUrl ? <Text style={styles.evidenceText}>Evidence · GitHub Actions run #33077367454</Text> : null}</View>
+        {item.route ? <MaterialIcons name="chevron-right" size={21} color={palette.muted} /> : null}
+      </Ai40Card>
+    </Pressable>
+  );
 
   return (
     <ScreenContainer className="px-4" containerClassName="bg-background">
@@ -58,7 +68,7 @@ export default function ToolsScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
         ListHeaderComponent={(
-          <View style={styles.header}>
+            <View style={styles.header}>
             <ScreenTitle eyebrow="AI40 CODEMIND" title="Возможности" />
             <Ai40Card style={styles.hero}>
               <View style={styles.heroTop}><View style={styles.heroMark}><MaterialIcons name="auto-awesome" size={23} color="#FFFFFF" /></View><StatusPill label="Только реальные статусы" tone="ready" /></View>
@@ -74,6 +84,13 @@ export default function ToolsScreen() {
               </View>
             </Ai40Card>
             <View style={styles.boundary}><MaterialIcons name="verified-user" size={19} color={palette.teal} /><Text style={styles.boundaryText}>Планы, review и предложения доступны сразу. Внешние действия, сборки и фоновые процессы требуют отдельной настройки и подтверждения.</Text></View>
+          </View>
+        )}
+        ListFooterComponent={(
+          <View style={styles.executionSection}>
+            <SectionTitle title="Статус исполнения" caption="Evidence-first" />
+            <Text style={styles.executionLead}>AI40 не подменяет plan фактом выполнения. Статус «Подтверждено» появляется только при наличии независимого лога или CI evidence.</Text>
+            <FlatList data={EXECUTION_STATUS} keyExtractor={(item) => item.id} renderItem={renderExecutionStatus} scrollEnabled={false} contentContainerStyle={styles.executionList} />
           </View>
         )}
       />
@@ -103,5 +120,15 @@ const styles = StyleSheet.create({
   titleRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 },
   title: { flex: 1, color: palette.ink, fontSize: 15, fontWeight: "800" },
   description: { color: palette.muted, fontSize: 12, lineHeight: 17 },
+  executionSection: { gap: 9, paddingTop: 2 },
+  executionLead: { color: palette.muted, fontSize: 12, lineHeight: 18 },
+  executionList: { gap: 8 },
+  statusPressable: { borderRadius: 16 },
+  statusCard: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 12 },
+  statusRail: { width: 4, alignSelf: "stretch", borderRadius: 4, backgroundColor: palette.indigo },
+  statusCopy: { flex: 1, gap: 5 },
+  statusTitle: { flex: 1, color: palette.ink, fontSize: 14, fontWeight: "800" },
+  statusDetail: { color: palette.muted, fontSize: 12, lineHeight: 17 },
+  evidenceText: { color: palette.teal, fontSize: 11, fontWeight: "800" },
   pressed: { opacity: 0.73, transform: [{ scale: 0.985 }] },
 });
