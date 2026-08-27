@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createApiKeyMaterial, extractApiKey, hashApiKey, isApiKeyFormat } from "../server/api-keys";
+import { AI40_API_KEY_SCOPES, createApiKeyMaterial, extractApiKey, hashApiKey, isApiKeyFormat } from "../server/api-keys";
 
 describe("AI40 API key material", () => {
   it("generates high-entropy server key material without exposing a hash as a credential", () => {
@@ -19,5 +19,9 @@ describe("AI40 API key material", () => {
     expect(extractApiKey({ authorization: `Bearer ${secret}` })).toBe(secret);
     expect(extractApiKey({ authorization: "Bearer project-session-token" })).toBeNull();
     expect(extractApiKey({ "x-api-key": "bad" })).toBeNull();
+  });
+
+  it("publishes a narrow, explicit scope vocabulary", () => {
+    expect(AI40_API_KEY_SCOPES).toEqual(["agent:run", "chat:complete", "models:read", "worker:plan"]);
   });
 });

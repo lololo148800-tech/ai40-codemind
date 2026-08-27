@@ -5,7 +5,12 @@ import { apiKeys } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 import { getDb } from "./db";
 
-export const API_KEY_SCOPE = "agent:run" as const;
+export const AI40_API_KEY_SCOPES = ["agent:run", "chat:complete", "models:read", "worker:plan"] as const;
+export type ApiKeyScope = (typeof AI40_API_KEY_SCOPES)[number];
+/** Backwards-compatible scope used by the multi-agent tRPC procedure. */
+export const API_KEY_SCOPE: ApiKeyScope = "agent:run";
+export const DEFAULT_API_KEY_SCOPES: readonly ApiKeyScope[] = ["agent:run", "chat:complete", "models:read", "worker:plan"];
+
 const API_KEY_PREFIX = "ai40_live_";
 const API_KEY_SECRET_BYTES = 32;
 
@@ -52,6 +57,12 @@ function parseScopes(serialized: string) {
   }
 }
 
+function normalizeScopes(scopes: readonly string[] | undefined): ApiKeyScope[] {
+  const requested = scopes?.length ? scopes : DEFAULT_API_KEY_SCOPES;
+  const valid = requested.filter((scope): scope is ApiKeyScope => (AI40_API_KEY_SCOPES as readonly string[]).includes(scope));
+  return [...new Set(valid)];
+}
+
 function toMetadata(row: typeof apiKeys.$inferSelect): ApiKeyMetadata {
   return {
     id: row.id,
@@ -67,7 +78,8 @@ function toMetadata(row: typeof apiKeys.$inferSelect): ApiKeyMetadata {
 export async function issueApiKey(input: { userId: number; name: string; scopes?: string[] }) {
   const db = await getDb();
   if (!db) throw new Error("Database is unavailable. API keys cannot be issued without durable storage.");
-  const scopes = input.scopes?.length ? input.scopes : [API_KEY_SCOPE];
+  const scopes = normalizeScopes(input.scopes);
+  if (!scopes.length) throw new Error("At least one valid API key scope is required.");
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const material = createApiKeyMaterial();
     const keyHash = hashApiKey(material.secret, apiKeyPepper());
@@ -81,12 +93,7 @@ export async function issueApiKey(input: { userId: number; name: string; scopes?
       });
       return {
         secret: material.secret,
-        key: {
-          id: Number(result[0].insertId),
-          name: input.name.trim(),
-          prefix: material.prefix,
-          scopes,
-        },
+        key: { id: Number(result[0].insertId), name: input.name.trim(), prefix: material.prefix, scopes },
       };
     } catch (error) {
       if (attempt === 2) throw error;

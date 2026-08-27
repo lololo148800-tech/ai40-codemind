@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { AI40_GATEWAY_MODELS, gatewayMessageContent, selectGatewayModel } from "../server/ai40-gateway";
+import { AI40_GATEWAY_MODELS, gatewayCompletion, gatewayMessageContent, selectGatewayModel, workerPlanResponse } from "../server/ai40-gateway";
 
 describe("AI40 OpenAI-compatible gateway", () => {
   const catalog = ["gpt-5", "gpt-5-mini", "gemini-3-flash-preview", "claude-opus-4-7"];
@@ -21,5 +21,17 @@ describe("AI40 OpenAI-compatible gateway", () => {
   it("returns text only from upstream content", () => {
     expect(gatewayMessageContent("  answer  ")).toBe("answer");
     expect(gatewayMessageContent([{ type: "text", text: "answer" }])).toBe("");
+  });
+
+  it("formats one deterministic OpenAI-compatible completion for normal and SSE clients", () => {
+    const completion = gatewayCompletion({ id: "chatcmpl_test", created: 1, model: "gpt-5", content: "answer", finishReason: "stop" });
+    expect(completion.choices[0]).toEqual({ index: 0, message: { role: "assistant", content: "answer" }, finish_reason: "stop" });
+  });
+
+  it("keeps a worker request at an explicit approval-first plan boundary", () => {
+    const response = workerPlanResponse("Проверь TypeScript проект и подготовь test plan");
+    expect(response.object).toBe("ai40.worker.plan");
+    expect(response.execution).toBe("approval_required");
+    expect(response.runbook.steps.length).toBeGreaterThan(0);
   });
 });

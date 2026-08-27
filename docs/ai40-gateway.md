@@ -17,14 +17,15 @@ export AI40_MODEL="ai40-code"
 python3 agent.py --agent "Проведи независимое code review и предложи тесты"
 ```
 
-`AI40_MODEL` принимает `ai40-code`, `ai40-fast`, `ai40-reason` или ID доступной runtime-модели. Gateway выбирает доступную модель по текущему серверному каталогу, поэтому не привязан к устаревшему статическому model ID.
+`AI40_MODEL` принимает `ai40-code`, `ai40-fast`, `ai40-reason` или ID доступной runtime-модели. Gateway выбирает доступную модель по текущему серверному каталогу, поэтому не привязан к устаревшему статическому model ID. Для длинного результата `tools/agent.py --stream "задача"` включает совместимый SSE-режим.
 
 ## Совместимый контракт
 
 | Endpoint | Авторизация | Назначение |
 |---|---|---|
-| `GET /api/v1/models` | `X-API-Key` или `Authorization: Bearer ai40_live_…` | Псевдонимы AI40 и текущие доступные модели |
-| `POST /api/v1/chat/completions` | Тот же ключ | Нестримающий text-only OpenAI-compatible chat completion |
+| `GET /api/v1/models` | `models:read` | Псевдонимы AI40 и текущие доступные модели |
+| `POST /api/v1/chat/completions` | `chat:complete` | Text-only completion, включая совместимый SSE при `stream: true` |
+| `POST /api/v1/worker/plan` | `worker:plan` | Approval-first runbook; не запускает команды, тесты или APK-сборку |
 
 Gateway принимает до 25 text-сообщений и максимум 4 000 output tokens. Он не принимает произвольные инструменты, не открывает shell и не заменяет изолированный worker; это защищённый AI ingress, а не доступ к инфраструктуре проекта.
 

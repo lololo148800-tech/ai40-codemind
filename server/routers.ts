@@ -2,7 +2,7 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
 import { createSlidingWindowLimiter, requestIdentity } from "./analysis-guard";
-import { API_KEY_SCOPE, authenticateApiKey, extractApiKey, issueApiKey, listApiKeys, revokeApiKey } from "./api-keys";
+import { AI40_API_KEY_SCOPES, API_KEY_SCOPE, authenticateApiKey, extractApiKey, issueApiKey, listApiKeys, revokeApiKey } from "./api-keys";
 import { askAssistant } from "./assistant";
 import { createAgentRunbook } from "./agent-runbook";
 import { importPublicGithubManifest } from "./github-manifest";
@@ -45,7 +45,9 @@ export const appRouter = router({
     list: protectedProcedure.query(({ ctx }) => listApiKeys(ctx.user.id)),
     issue: protectedProcedure.input(z.object({
       name: z.string().trim().min(2).max(80),
-    })).mutation(({ ctx, input }) => issueApiKey({ userId: ctx.user.id, name: input.name })),
+      scopes: z.array(z.enum(AI40_API_KEY_SCOPES)).min(1).max(AI40_API_KEY_SCOPES.length).optional(),
+    })).mutation(({ ctx, input }) => issueApiKey({ userId: ctx.user.id, name: input.name, scopes: input.scopes })),
+    supportedScopes: protectedProcedure.query(() => AI40_API_KEY_SCOPES),
     revoke: protectedProcedure.input(z.object({
       keyId: z.number().int().positive(),
     })).mutation(({ ctx, input }) => revokeApiKey({ userId: ctx.user.id, keyId: input.keyId })),
