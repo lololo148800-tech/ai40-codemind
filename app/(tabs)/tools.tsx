@@ -1,85 +1,80 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { Ai40Card, palette, ScreenTitle, StatusPill } from "@/components/ai40-ui";
+import { Ai40Card, palette, ScreenTitle, SectionTitle, StatusPill } from "@/components/ai40-ui";
 import { ScreenContainer } from "@/components/screen-container";
-import type { AssistantMode } from "@/lib/workspace-storage";
+import { CAPABILITY_SECTIONS, getCapabilityById, QUICK_CAPABILITY_IDS, type CapabilityItem, type CapabilitySection } from "@/lib/capability-catalog";
 
-const TOOLS: {
-  mode: AssistantMode;
-  title: string;
-  description: string;
-  icon: React.ComponentProps<typeof MaterialIcons>["name"];
-  color: string;
-}[] = [
-  { mode: "code", title: "Код", description: "Объяснить фрагмент, составить план изменений или провести доказательное ревью.", icon: "code", color: "#4F46E5" },
-  { mode: "research", title: "Исследование", description: "Собрать выводы только из добавленного вами контекста и отметить пробелы в данных.", icon: "travel-explore", color: "#0F9E88" },
-  { mode: "create", title: "Создать", description: "Превратить идею в архитектуру, этапы, риски и список проверок.", icon: "auto-awesome", color: "#A049C5" },
-  { mode: "question", title: "Спросить", description: "Получить прямое объяснение, сравнение вариантов или рабочий черновик текста.", icon: "chat-bubble-outline", color: "#2563EB" },
-];
+function stateTone(state: CapabilityItem["state"]): "ready" | "warning" | "neutral" {
+  if (state === "ready") return "ready";
+  if (state === "setup") return "warning";
+  return "neutral";
+}
 
 export default function ToolsScreen() {
   const router = useRouter();
+  const quickActions = QUICK_CAPABILITY_IDS.map(getCapabilityById).filter((item): item is CapabilityItem => Boolean(item));
+
+  const openCapability = (item: CapabilityItem) => {
+    if (item.route) {
+      router.push(item.route as never);
+      return;
+    }
+    Alert.alert(item.title, item.nextStep ?? "Эта возможность пока не подключена. AI40 не будет имитировать её работу.", [{ text: "Понятно" }]);
+  };
+
+  const renderSection = ({ item: section }: { item: CapabilitySection }) => (
+    <View style={styles.section}>
+      <SectionTitle title={section.title} caption={section.caption} />
+      <View style={styles.items}>
+        {section.items.map((capability) => (
+          <Pressable key={capability.id} accessibilityRole="button" accessibilityLabel={`${capability.title}: ${capability.stateLabel}`} onPress={() => openCapability(capability)} style={({ pressed }) => [styles.cardPressable, pressed && styles.pressed]}>
+            <Ai40Card style={styles.capabilityCard}>
+              <View style={[styles.iconWrap, { backgroundColor: `${capability.color}18` }]}>
+                <MaterialIcons name={capability.icon} size={23} color={capability.color} />
+              </View>
+              <View style={styles.copy}>
+                <View style={styles.titleRow}>
+                  <Text style={styles.title}>{capability.title}</Text>
+                  <StatusPill label={capability.stateLabel} tone={stateTone(capability.state)} />
+                </View>
+                <Text style={styles.description}>{capability.description}</Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={22} color={palette.muted} />
+            </Ai40Card>
+          </Pressable>
+        ))}
+      </View>
+    </View>
+  );
 
   return (
     <ScreenContainer className="px-4" containerClassName="bg-background">
       <FlatList
-        data={TOOLS}
-        keyExtractor={(tool) => tool.mode}
-        contentContainerStyle={styles.content}
+        data={CAPABILITY_SECTIONS}
+        keyExtractor={(section) => section.id}
+        renderItem={renderSection}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
         ListHeaderComponent={(
           <View style={styles.header}>
-            <ScreenTitle eyebrow="МОДУЛИ" title="Инструменты" />
-            <Ai40Card style={styles.notice}>
-              <View style={styles.noticeRow}>
-                <MaterialIcons name="verified-user" size={22} color={palette.teal} />
-                <View style={styles.noticeCopy}>
-                  <Text style={styles.noticeTitle}>Контролируемые возможности</Text>
-                  <Text style={styles.noticeText}>Каждый режим генерирует ответ или предложение. Приложение не запускает код, не меняет файлы и не отправляет данные без вашего действия.</Text>
-                </View>
+            <ScreenTitle eyebrow="AI40 CODEMIND" title="Возможности" />
+            <Ai40Card style={styles.hero}>
+              <View style={styles.heroTop}><View style={styles.heroMark}><MaterialIcons name="auto-awesome" size={23} color="#FFFFFF" /></View><StatusPill label="Только реальные статусы" tone="ready" /></View>
+              <Text style={styles.heroTitle}>Что сделаем?</Text>
+              <Text style={styles.heroText}>Выберите действие. Карточки ведут к рабочему разделу, подготовке задачи или честно объясняют, какое подключение ещё требуется.</Text>
+              <View style={styles.quickRow}>
+                {quickActions.map((item) => (
+                  <Pressable key={item.id} accessibilityRole="button" onPress={() => openCapability(item)} style={({ pressed }) => [styles.quickAction, pressed && styles.pressed]}>
+                    <MaterialIcons name={item.icon} size={20} color={item.color} />
+                    <Text style={styles.quickLabel} numberOfLines={2}>{item.title}</Text>
+                  </Pressable>
+                ))}
               </View>
             </Ai40Card>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => router.push("/agent" as never)}
-              style={({ pressed }) => [styles.agentEntry, pressed && styles.pressed]}
-            >
-              <View style={styles.agentIcon}>
-                <MaterialIcons name="hub" size={23} color="#FFFFFF" />
-              </View>
-              <View style={styles.toolCopy}>
-                <View style={styles.toolTitleRow}>
-                  <Text style={styles.toolTitle}>Многоагентный coding workflow</Text>
-                  <StatusPill label="10 ролей" tone="ready" />
-                </View>
-                <Text style={styles.toolDescription}>Параллельный review, баг-анализ, архитектура, тест-план и подготовка APK без автоматического запуска кода.</Text>
-              </View>
-              <MaterialIcons name="chevron-right" size={23} color={palette.muted} />
-            </Pressable>
+            <View style={styles.boundary}><MaterialIcons name="verified-user" size={19} color={palette.teal} /><Text style={styles.boundaryText}>Планы, review и предложения доступны сразу. Внешние действия, сборки и фоновые процессы требуют отдельной настройки и подтверждения.</Text></View>
           </View>
-        )}
-        renderItem={({ item }) => (
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => router.push(`/?mode=${item.mode}`)}
-            style={({ pressed }) => [pressed && styles.pressed]}
-          >
-            <Ai40Card style={styles.toolCard}>
-              <View style={[styles.toolIcon, { backgroundColor: `${item.color}18` }]}>
-                <MaterialIcons name={item.icon} size={24} color={item.color} />
-              </View>
-              <View style={styles.toolCopy}>
-                <View style={styles.toolTitleRow}>
-                  <Text style={styles.toolTitle}>{item.title}</Text>
-                  <StatusPill label="Открыть" tone="ready" />
-                </View>
-                <Text style={styles.toolDescription}>{item.description}</Text>
-              </View>
-              <MaterialIcons name="chevron-right" size={23} color={palette.muted} />
-            </Ai40Card>
-          </Pressable>
         )}
       />
     </ScreenContainer>
@@ -87,20 +82,26 @@ export default function ToolsScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { gap: 12, paddingTop: 16, paddingBottom: 28 },
-  header: { gap: 16, marginBottom: 4 },
-  notice: { backgroundColor: "#F1FAF8", borderColor: "#CFEDE7" },
-  noticeRow: { flexDirection: "row", gap: 11, alignItems: "flex-start" },
-  noticeCopy: { flex: 1, gap: 4 },
-  noticeTitle: { color: palette.ink, fontWeight: "800", fontSize: 14 },
-  noticeText: { color: palette.muted, fontSize: 12, lineHeight: 18 },
-  agentEntry: { flexDirection: "row", alignItems: "center", gap: 13, padding: 14, borderRadius: 18, backgroundColor: "#F4F3FF", borderWidth: 1, borderColor: "#DDD9FF" },
-  agentIcon: { width: 48, height: 48, borderRadius: 16, alignItems: "center", justifyContent: "center", backgroundColor: palette.indigo },
-  toolCard: { flexDirection: "row", gap: 13, alignItems: "center" },
-  toolIcon: { width: 48, height: 48, borderRadius: 16, alignItems: "center", justifyContent: "center" },
-  toolCopy: { flex: 1, gap: 5 },
-  toolTitleRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 },
-  toolTitle: { color: palette.ink, fontSize: 16, fontWeight: "800" },
-  toolDescription: { color: palette.muted, fontSize: 12, lineHeight: 18 },
-  pressed: { opacity: 0.72 },
+  content: { gap: 22, paddingTop: 16, paddingBottom: 28 },
+  header: { gap: 16 },
+  hero: { gap: 12, backgroundColor: "#F4F3FF", borderColor: "#DDD9FF" },
+  heroTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  heroMark: { width: 42, height: 42, borderRadius: 14, alignItems: "center", justifyContent: "center", backgroundColor: palette.indigo },
+  heroTitle: { color: palette.ink, fontSize: 24, fontWeight: "900", letterSpacing: -0.45 },
+  heroText: { color: palette.muted, fontSize: 13, lineHeight: 19 },
+  quickRow: { flexDirection: "row", gap: 8 },
+  quickAction: { flex: 1, minHeight: 86, paddingHorizontal: 10, paddingVertical: 11, gap: 8, borderRadius: 15, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#E4E2FF" },
+  quickLabel: { color: palette.ink, fontWeight: "800", fontSize: 11, lineHeight: 15 },
+  boundary: { flexDirection: "row", alignItems: "flex-start", gap: 9, paddingHorizontal: 12, paddingVertical: 11, borderRadius: 14, backgroundColor: "#F1FAF8", borderWidth: 1, borderColor: "#CFEDE7" },
+  boundaryText: { flex: 1, color: palette.muted, fontSize: 12, lineHeight: 18 },
+  section: { gap: 10 },
+  items: { gap: 9 },
+  cardPressable: { borderRadius: 18 },
+  capabilityCard: { flexDirection: "row", alignItems: "center", gap: 12 },
+  iconWrap: { width: 46, height: 46, borderRadius: 15, alignItems: "center", justifyContent: "center" },
+  copy: { flex: 1, gap: 5 },
+  titleRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 },
+  title: { flex: 1, color: palette.ink, fontSize: 15, fontWeight: "800" },
+  description: { color: palette.muted, fontSize: 12, lineHeight: 17 },
+  pressed: { opacity: 0.73, transform: [{ scale: 0.985 }] },
 });

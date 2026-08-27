@@ -31,7 +31,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen name="index" options={{ title: "Ассистент", tabBarIcon: ({ color }) => <MaterialIcons name="chat-bubble-outline" size={23} color={color} /> }} />
-      <Tabs.Screen name="tools" options={{ title: "Инструменты", tabBarIcon: ({ color }) => <MaterialIcons name="grid-view" size={23} color={color} /> }} />
+      <Tabs.Screen name="tools" options={{ title: "Возможности", tabBarIcon: ({ color }) => <MaterialIcons name="grid-view" size={23} color={color} /> }} />
       <Tabs.Screen name="materials" options={{ title: "Материалы", tabBarIcon: ({ color }) => <MaterialIcons name="folder-open" size={23} color={color} /> }} />
       <Tabs.Screen name="github" options={{ title: "GitHub", tabBarIcon: ({ color }) => <MaterialIcons name="code" size={23} color={color} /> }} />
     </Tabs>
