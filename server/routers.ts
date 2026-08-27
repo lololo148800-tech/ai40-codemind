@@ -3,6 +3,7 @@ import { z } from "zod";
 import { askAssistant } from "./assistant";
 import { createAgentRunbook } from "./agent-runbook";
 import { importPublicGithubManifest } from "./github-manifest";
+import { runMultiAgentPanel } from "./multi-agent";
 import { COOKIE_NAME } from "../shared/const.js";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -13,6 +14,7 @@ const assistantHistorySchema = z.array(z.object({
   role: z.enum(["user", "assistant"]),
   content: z.string().min(1).max(4_000),
 })).max(10);
+const agentIntentSchema = z.enum(["code_review", "bug_hunt", "architecture", "test_plan", "apk_plan"]);
 
 export const appRouter = router({
   system: systemRouter,
@@ -36,6 +38,11 @@ export const appRouter = router({
     createRunbook: publicProcedure.input(z.object({
       goal: z.string().trim().min(3).max(12_000),
     })).mutation(({ input }) => ({ runbook: createAgentRunbook(input.goal) })),
+    runPanel: publicProcedure.input(z.object({
+      goal: z.string().trim().min(3).max(6_000),
+      intent: agentIntentSchema,
+      context: z.string().max(12_000).optional(),
+    })).mutation(({ input }) => runMultiAgentPanel(input)),
   }),
   github: router({
     importManifest: publicProcedure.input(z.object({

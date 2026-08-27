@@ -41,6 +41,23 @@ export default function ToolsScreen() {
                 </View>
               </View>
             </Ai40Card>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push("/agent" as never)}
+              style={({ pressed }) => [styles.agentEntry, pressed && styles.pressed]}
+            >
+              <View style={styles.agentIcon}>
+                <MaterialIcons name="hub" size={23} color="#FFFFFF" />
+              </View>
+              <View style={styles.toolCopy}>
+                <View style={styles.toolTitleRow}>
+                  <Text style={styles.toolTitle}>Многоагентный coding workflow</Text>
+                  <StatusPill label="10 ролей" tone="ready" />
+                </View>
+                <Text style={styles.toolDescription}>Параллельный review, баг-анализ, архитектура, тест-план и подготовка APK без автоматического запуска кода.</Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={23} color={palette.muted} />
+            </Pressable>
           </View>
         )}
         renderItem={({ item }) => (
@@ -77,6 +94,8 @@ const styles = StyleSheet.create({
   noticeCopy: { flex: 1, gap: 4 },
   noticeTitle: { color: palette.ink, fontWeight: "800", fontSize: 14 },
   noticeText: { color: palette.muted, fontSize: 12, lineHeight: 18 },
+  agentEntry: { flexDirection: "row", alignItems: "center", gap: 13, padding: 14, borderRadius: 18, backgroundColor: "#F4F3FF", borderWidth: 1, borderColor: "#DDD9FF" },
+  agentIcon: { width: 48, height: 48, borderRadius: 16, alignItems: "center", justifyContent: "center", backgroundColor: palette.indigo },
   toolCard: { flexDirection: "row", gap: 13, alignItems: "center" },
   toolIcon: { width: 48, height: 48, borderRadius: 16, alignItems: "center", justifyContent: "center" },
   toolCopy: { flex: 1, gap: 5 },
