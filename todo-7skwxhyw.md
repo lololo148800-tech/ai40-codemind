@@ -32,3 +32,13 @@
 - [x] Добавить тесты API-key auth, миграцию схемы и пройти проверку типов/lint/test.
 - [x] Проверить работу выдачи и отзыва API-ключей через типы, тесты и созданную таблицу БД.
 - [ ] Сохранить checkpoint API-key аутентификации и усиленного coding workflow.
+- [ ] Проверить server runtime и существующий LLM helper для собственного OpenAI-compatible endpoint.
+- [ ] Спроектировать AI40 gateway: API-key auth, допустимые модели, chat completion contract и coding-профили.
+- [ ] Реализовать защищённый AI40 `/v1/chat/completions` endpoint без OpenRouter-ключа в клиенте.
+- [ ] Добавить точное руководство переключения agent.py на `AI40_API_KEY` и собственный endpoint.
+- [ ] Проверить авторизацию, форматы запросов, ошибки и сохранить checkpoint gateway.
+- [x] Проверить server runtime и существующий LLM helper для собственного OpenAI-compatible endpoint.
+- [x] Спроектировать AI40 gateway: API-key auth, допустимые модели, chat completion contract и coding-профили.
+- [x] Реализовать защищённый AI40 `/v1/chat/completions` endpoint без OpenRouter-ключа в клиенте.
+- [x] Добавить точное руководство и встроенный `tools/agent.py` с `AI40_API_KEY` для собственного endpoint.
+- [x] Проверить авторизацию, форматы запросов, ошибки и совместимость Python-клиента.
