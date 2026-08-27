@@ -9,6 +9,7 @@ describe("AI40 CI dashboard", () => {
     ["ai40-quality-gate.yml", "ai40-android-debug-artifact.yml"].forEach((file) => {
       const source = readFileSync(`.github/workflows/${file}`, "utf8");
       expect(source.indexOf("- name: Setup pnpm")).toBeLessThan(source.indexOf("- name: Setup Node"));
+      expect(source).not.toMatch(/Setup pnpm[\s\S]*?version:\s*9/);
     });
   });
 
