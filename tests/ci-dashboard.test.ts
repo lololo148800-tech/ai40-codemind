@@ -1,9 +1,17 @@
 import { describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
 
 import { buildCiConnectionPlan, fetchPublicCiRuns } from "../server/ci-dashboard";
 import { assertSafePublicHttpsUrl, inspectPublicWebsite } from "../server/website-analysis";
 
 describe("AI40 CI dashboard", () => {
+  it("configures pnpm before setup-node asks for a pnpm cache", () => {
+    ["ai40-quality-gate.yml", "ai40-android-debug-artifact.yml"].forEach((file) => {
+      const source = readFileSync(`.github/workflows/${file}`, "utf8");
+      expect(source.indexOf("- name: Setup pnpm")).toBeLessThan(source.indexOf("- name: Setup Node"));
+    });
+  });
+
   it("creates an approval-first GitHub connection plan", () => {
     const plan = buildCiConnectionPlan("https://github.com/owner/repo");
     expect(plan.repositoryUrl).toBe("https://github.com/owner/repo");
