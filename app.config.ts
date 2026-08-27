@@ -46,9 +46,9 @@ const config: ExpoConfig = {
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
   userInterfaceStyle: "automatic",
-  // The previous native debug build closed immediately after the splash on Android.
-  // Keep the broadly compatible architecture until device startup is verified.
-  newArchEnabled: false,
+  // Reanimated 4 in Expo SDK 54 requires the New Architecture at Android build time.
+  // Runtime safeguards live in the root layout and theme bootstrap instead.
+  newArchEnabled: true,
   ios: {
     supportsTablet: true,
     bundleIdentifier: env.iosBundleId,

@@ -2,10 +2,10 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 describe("Android startup compatibility", () => {
-  it("uses the compatibility architecture and mounts a render fallback", () => {
+  it("uses the architecture required by Reanimated and mounts a render fallback", () => {
     const config = readFileSync("app.config.ts", "utf8");
     const layout = readFileSync("app/_layout.tsx", "utf8");
-    expect(config).toContain("newArchEnabled: false");
+    expect(config).toContain("newArchEnabled: true");
     expect(layout).toContain("StartupErrorBoundary");
   });
 
