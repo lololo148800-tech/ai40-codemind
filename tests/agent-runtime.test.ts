@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { AGENT_TOOL_DEFINITIONS, formatExplicitMemory, validateAgentFinal, validateRuntimeToolCall } from "../server/agent-runtime";
+import { AGENT_TOOL_DEFINITIONS, formatExplicitMemory, inspectCodeSnippet, validateAgentFinal, validateRuntimeToolCall } from "../server/agent-runtime";
 
 describe("bounded AI40 agent runtime", () => {
   it("publishes only the small typed tool registry", () => {
-    expect(AGENT_TOOL_DEFINITIONS.map((tool) => tool.function.name)).toEqual(["search_explicit_memory", "propose_workspace_change", "propose_external_action"]);
+    expect(AGENT_TOOL_DEFINITIONS.map((tool) => tool.function.name)).toEqual(["search_explicit_memory", "inspect_code_snippet", "propose_workspace_change", "propose_external_action"]);
     expect(AGENT_TOOL_DEFINITIONS.map((tool) => tool.function.name)).not.toContain("shell");
   });
 
@@ -25,5 +25,11 @@ describe("bounded AI40 agent runtime", () => {
     const valid = JSON.stringify({ summary: "Добавить тесты", steps: [{ title: "Написать тест", verification: "pnpm test" }], risks: ["Нет"] });
     expect(validateAgentFinal(valid, "action_plan")).toMatchObject({ valid: true, content: "Добавить тесты" });
     expect(validateAgentFinal('{"summary":"не хватает полей"}', "action_plan")).toMatchObject({ valid: false });
+  });
+
+  it("reviews only supplied code text and reports review signals without executing it", () => {
+    const review = inspectCodeSnippet('const token = "not-a-real-secret-123";\neval(input);\n// TODO: harden');
+    expect(review.inspectedLines).toBe(3);
+    expect(review.findings.map((finding) => finding.rule)).toEqual(expect.arrayContaining(["hardcoded_secret", "dynamic_execution", "todo_marker"]));
   });
 });

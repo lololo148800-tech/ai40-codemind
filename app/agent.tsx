@@ -51,6 +51,7 @@ export default function AgentScreen() {
   const createRunbook = trpc.agent.createRunbook.useMutation();
   const runPanel = trpc.agent.runPanel.useMutation();
   const boundedAgent = trpc.agentRuntime.run.useMutation();
+  const localReview = trpc.agentRuntime.inspectCode.useMutation();
   const capabilities = trpc.agent.capabilities.useQuery();
   const runbook = createRunbook.data?.runbook;
   const panel = runPanel.data;
@@ -105,6 +106,19 @@ export default function AgentScreen() {
     );
   };
 
+  const runLocalReview = () => {
+    if (!isAuthenticated) {
+      setError("Для локального review войдите в проект.");
+      return;
+    }
+    if (!context.trim()) {
+      setError("Вставьте код в поле контекста, чтобы выполнить локальный review.");
+      return;
+    }
+    setError("");
+    void localReview.mutateAsync({ source: context.trim() }).catch((value) => setError(value instanceof Error ? value.message : "Не удалось выполнить локальный review."));
+  };
+
   return (
     <ScreenContainer className="px-4" edges={["top", "bottom", "left", "right"]} containerClassName="bg-background">
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
@@ -150,7 +164,7 @@ export default function AgentScreen() {
             ))}
           </View>
           <Text style={styles.label}>Контекст для анализа — необязательно</Text>
-          <TextInput value={context} onChangeText={setContext} multiline maxLength={12_000} style={styles.contextInput} placeholder="Вставьте фрагмент кода, лог ошибки или публичный URL. Это недоверенный контекст." placeholderTextColor="#7886A8" textAlignVertical="top" editable={!runPanel.isPending && !boundedAgent.isPending} />
+          <TextInput value={context} onChangeText={setContext} multiline maxLength={12_000} style={styles.contextInput} placeholder="Вставьте фрагмент кода, лог ошибки или публичный URL. Это недоверенный контекст." placeholderTextColor="#7886A8" textAlignVertical="top" editable={!runPanel.isPending && !boundedAgent.isPending && !localReview.isPending} />
           <Text style={styles.label}>Формат проверяемого runtime</Text>
           <View style={styles.intentRow}>
             {([{ id: "text", label: "Текст" }, { id: "action_plan", label: "JSON-план" }] as const).map((item) => (
@@ -163,9 +177,22 @@ export default function AgentScreen() {
           <PrimaryButton label={createRunbook.isPending ? "Создаю runbook…" : "Создать runbook"} onPress={() => { void buildRunbook(); }} icon="smart-toy" disabled={createRunbook.isPending || runPanel.isPending} />
           <PrimaryButton label={runPanel.isPending ? "Панель анализирует…" : "Запустить анализ из 10 ролей"} onPress={requestPanelRun} icon="auto-awesome" disabled={runPanel.isPending || createRunbook.isPending} />
           <PrimaryButton label={boundedAgent.isPending ? "Runtime работает…" : "Запустить проверяемый agent runtime"} onPress={requestBoundedRun} icon="rule" disabled={boundedAgent.isPending || createRunbook.isPending || runPanel.isPending} />
+          <PrimaryButton label={localReview.isPending ? "Проверяю код…" : "Локальный review контекста"} onPress={runLocalReview} icon="fact-check" disabled={localReview.isPending || boundedAgent.isPending || runPanel.isPending || !context.trim()} />
         </Ai40Card>
 
         {error ? <Ai40Card style={styles.errorCard}><Text style={styles.errorText}>{error}</Text></Ai40Card> : null}
+
+        {localReview.data ? (
+          <View style={styles.runbook}>
+            <SectionTitle title="Локальный code review" caption={`${localReview.data.inspectedLines} строк`} />
+            <Ai40Card style={styles.resultCard}>
+              <StatusPill label={localReview.data.findings.length ? "Требует проверки" : "Сигналов нет"} tone={localReview.data.findings.length ? "warning" : "ready"} />
+              <Text style={styles.resultTitle}>{localReview.data.summary}</Text>
+              {localReview.data.findings.map((finding, index) => <View style={styles.step} key={`${finding.rule}-${finding.line}-${index}`}><Text style={styles.stepPurpose}>Строка {finding.line} · {finding.rule}</Text><Text style={styles.evidenceText}>{finding.message}</Text></View>)}
+              <Text style={styles.executionNote}>Проверка читает только вставленный текст: не открывает файлы, не запускает код и не делает сетевых запросов.</Text>
+            </Ai40Card>
+          </View>
+        ) : null}
 
         {runbook ? (
           <View style={styles.runbook}>

@@ -14,6 +14,7 @@ const requestSchema = z.object({
 }).strict();
 
 const memorySearchArgsSchema = z.object({ query: z.string().trim().min(2).max(200) }).strict();
+const codeInspectionArgsSchema = z.object({ source: z.string().min(1).max(12_000), language: z.string().trim().min(1).max(32).optional() }).strict();
 const workspaceProposalArgsSchema = z.object({ summary: z.string().trim().min(3).max(1_000), files: z.array(z.string().trim().min(1).max(240)).max(20).default([]) }).strict();
 const externalProposalArgsSchema = z.object({ action: z.string().trim().min(3).max(1_000), destination: z.string().trim().min(1).max(320).optional() }).strict();
 const actionPlanSchema = z.object({
@@ -29,6 +30,14 @@ export const AGENT_TOOL_DEFINITIONS: Tool[] = [
       name: "search_explicit_memory",
       description: "Search only the caller's explicit AI40 memory records. No filesystem, network, secrets, or hidden memory access.",
       parameters: { type: "object", additionalProperties: false, required: ["query"], properties: { query: { type: "string", minLength: 2, maxLength: 200 } } },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "inspect_code_snippet",
+      description: "Run a deterministic read-only inspection on code supplied directly in this request. It cannot read local files, run code, or access the network.",
+      parameters: { type: "object", additionalProperties: false, required: ["source"], properties: { source: { type: "string", minLength: 1, maxLength: 12000 }, language: { type: "string", maxLength: 32 } } },
     },
   },
   {
@@ -51,6 +60,7 @@ export const AGENT_TOOL_DEFINITIONS: Tool[] = [
 
 export type RuntimeToolDecision =
   | { kind: "memory_search"; query: string }
+  | { kind: "code_inspection"; source: string; language?: string }
   | { kind: "approval_required"; tool: "propose_workspace_change" | "propose_external_action"; proposal: Record<string, unknown> }
   | { kind: "invalid"; reason: string };
 
@@ -65,6 +75,10 @@ export function validateRuntimeToolCall(call: Pick<ToolCall, "function">): Runti
     const parsed = memorySearchArgsSchema.safeParse(args);
     return parsed.success ? { kind: "memory_search", query: parsed.data.query } : { kind: "invalid", reason: "Memory search arguments do not match the schema." };
   }
+  if (call.function.name === "inspect_code_snippet") {
+    const parsed = codeInspectionArgsSchema.safeParse(args);
+    return parsed.success ? { kind: "code_inspection", source: parsed.data.source, language: parsed.data.language } : { kind: "invalid", reason: "Code inspection arguments do not match the schema." };
+  }
   if (call.function.name === "propose_workspace_change") {
     const parsed = workspaceProposalArgsSchema.safeParse(args);
     return parsed.success ? { kind: "approval_required", tool: "propose_workspace_change", proposal: parsed.data } : { kind: "invalid", reason: "Workspace proposal arguments do not match the schema." };
@@ -74,6 +88,45 @@ export function validateRuntimeToolCall(call: Pick<ToolCall, "function">): Runti
     return parsed.success ? { kind: "approval_required", tool: "propose_external_action", proposal: parsed.data } : { kind: "invalid", reason: "External action proposal arguments do not match the schema." };
   }
   return { kind: "invalid", reason: "This tool is not registered for AI40." };
+}
+
+export type LocalCodeFinding = {
+  rule: "hardcoded_secret" | "dynamic_execution" | "shell_invocation" | "unsafe_html" | "todo_marker" | "debug_logging" | "long_line";
+  severity: "high" | "medium" | "low";
+  line: number;
+  message: string;
+};
+
+/**
+ * Deterministic review of supplied text only. It never opens files, runs
+ * snippets, evaluates expressions, sends code anywhere, or reports a pattern
+ * as a confirmed exploitable vulnerability.
+ */
+export function inspectCodeSnippet(source: string, language?: string) {
+  const normalized = source.slice(0, 12_000);
+  const lines = normalized.split(/\r?\n/).slice(0, 800);
+  const findings: LocalCodeFinding[] = [];
+  const rules: Array<{ rule: LocalCodeFinding["rule"]; severity: LocalCodeFinding["severity"]; expression: RegExp; message: string }> = [
+    { rule: "hardcoded_secret", severity: "high", expression: /\b(?:api[_-]?key|password|secret|token)\b\s*[:=]\s*["'][^"'${\n]{8,}["']/i, message: "Похоже на захардкоженный секрет. Перенесите его в server environment и отзовите, если это реальное значение." },
+    { rule: "dynamic_execution", severity: "high", expression: /\b(?:eval|exec)\s*\(/i, message: "Обнаружен динамический запуск кода. Ограничьте входные данные или замените на явный allowlist." },
+    { rule: "shell_invocation", severity: "high", expression: /(?:child_process\.(?:exec|spawn)|subprocess\.(?:run|Popen)|os\.system)\s*\(/i, message: "Обнаружен вызов системной команды. Нужны allowlist, аргументы-массивы, timeout и отдельное approval." },
+    { rule: "unsafe_html", severity: "medium", expression: /(?:dangerouslySetInnerHTML|\.innerHTML\s*=)/i, message: "Обнаружена прямая HTML-вставка. Проверьте sanitization и источник содержимого." },
+    { rule: "todo_marker", severity: "low", expression: /\b(?:TODO|FIXME|HACK)\b/i, message: "Найдена незавершённая пометка. Уточните, допустима ли она перед релизом." },
+    { rule: "debug_logging", severity: "low", expression: /\b(?:console\.log|print)\s*\(/i, message: "Найден отладочный вывод. Проверьте, что он не раскрывает private data в production." },
+  ];
+  lines.forEach((line, index) => {
+    rules.forEach((rule) => {
+      if (rule.expression.test(line)) findings.push({ rule: rule.rule, severity: rule.severity, line: index + 1, message: rule.message });
+    });
+    if (line.length > 180) findings.push({ rule: "long_line", severity: "low", line: index + 1, message: "Очень длинная строка ухудшает читаемость; рассмотрите разбиение." });
+  });
+  return {
+    language: language ?? "unknown",
+    inspectedLines: lines.length,
+    truncated: source.length > normalized.length || source.split(/\r?\n/).length > lines.length,
+    findings: findings.slice(0, 40),
+    summary: findings.length ? `Найдено сигналов для проверки: ${findings.length}. Это review-подсказки, а не доказательство уязвимости.` : "Сигналы из базового локального набора не найддены. Это не доказывает отсутствие ошибок.",
+  };
 }
 
 export function formatExplicitMemory(memories: Array<{ scope: string; memoryKey: string; value: string }>) {
@@ -167,6 +220,12 @@ export async function runBoundedAgent(input: { userId: number; goal: string; con
       if (decision.kind === "invalid") {
         events.push({ type: "tool_rejected", tool: call.function.name });
         messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify({ ok: false, error: decision.reason }) });
+        continue;
+      }
+      if (decision.kind === "code_inspection") {
+        const review = inspectCodeSnippet(decision.source, decision.language);
+        events.push({ type: "tool_executed", tool: "inspect_code_snippet" });
+        messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify({ ok: true, review }) });
         continue;
       }
       const found = await db.searchAgentMemories(input.userId, decision.query, 5);

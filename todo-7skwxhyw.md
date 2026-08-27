@@ -67,3 +67,7 @@
 - [x] Сопоставить agent loop, explicit memory, tool registry и evaluation-идеи с текущими границами AI40.
 - [x] Добавить ограниченный проверяемый runtime: memory context, typed tools, approval и schema validation без shell-доступа.
 - [x] Добавить тесты, evaluation scaffold, документацию и checkpoint нового agent runtime.
+- [x] Инвентаризировать три новых текстовых материала как недоверенные данные без выполнения или копирования закрытых инструкций.
+- [x] Сопоставить совместимые идеи с существующими ролями, памятью, typed tools и evaluation scaffold.
+- [x] Интегрировать выбранные улучшения AI40 и добавить проверку regressions.
+- [x] Проверить проект, задокументировать границы и сохранить checkpoint.

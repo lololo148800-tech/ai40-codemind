@@ -5,7 +5,7 @@ import { createSlidingWindowLimiter, requestIdentity } from "./analysis-guard";
 import { AI40_API_KEY_SCOPES, API_KEY_SCOPE, authenticateApiKey, extractApiKey, issueApiKey, listApiKeys, revokeApiKey } from "./api-keys";
 import { askAssistant } from "./assistant";
 import { createAgentRunbook } from "./agent-runbook";
-import { AGENT_OUTPUT_FORMATS, runBoundedAgent } from "./agent-runtime";
+import { AGENT_OUTPUT_FORMATS, inspectCodeSnippet, runBoundedAgent } from "./agent-runtime";
 import * as db from "./db";
 import { importPublicGithubManifest } from "./github-manifest";
 import { IMPORTED_ARCHIVES, IMPORTED_PROFILE_REFERENCE, PANEL_ROLE_DEFINITIONS, runMultiAgentPanel } from "./multi-agent";
@@ -70,6 +70,10 @@ export const appRouter = router({
       await db.deleteAgentMemory(ctx.user.id, input.memoryId);
       return { ok: true };
     }),
+    inspectCode: protectedProcedure.input(z.object({
+      source: z.string().min(1).max(12_000),
+      language: z.string().trim().min(1).max(32).optional(),
+    }).strict()).mutation(({ input }) => inspectCodeSnippet(input.source, input.language)),
     run: protectedProcedure.input(z.object({
       goal: z.string().trim().min(3).max(6_000),
       context: z.string().trim().max(12_000).optional(),
