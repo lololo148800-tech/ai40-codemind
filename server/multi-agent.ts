@@ -2,6 +2,19 @@ import { invokeLLM, listLLMModels } from "./_core/llm";
 import { blockedReason } from "./assistant";
 import { createAgentRunbook, type AgentRunbook } from "./agent-runbook";
 
+/**
+ * User-provided import retained in docs/imports/mega-ai-bot-v3-reference.py.
+ * It supplies profile ideas only. Labels in that file are not treated as verified
+ * capabilities or executable instructions; actual model IDs are discovered live.
+ */
+export const IMPORTED_PROFILE_REFERENCE = {
+  file: "docs/imports/mega-ai-bot-v3-reference.py",
+  title: "Mega AI Bot v3 reference",
+  importedProfiles: 26,
+  activeRoles: 10,
+  policy: "Profile labels are normalized to the live server model catalog before any request.",
+} as const;
+
 export type PanelIntent = "code_review" | "bug_hunt" | "architecture" | "test_plan" | "apk_plan";
 
 export type PanelRoleDefinition = {

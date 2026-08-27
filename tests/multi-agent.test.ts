@@ -1,8 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import { buildRoleAssignments, PANEL_ROLE_DEFINITIONS, runMultiAgentPanel } from "../server/multi-agent";
+import { buildRoleAssignments, IMPORTED_PROFILE_REFERENCE, PANEL_ROLE_DEFINITIONS, runMultiAgentPanel } from "../server/multi-agent";
 
 describe("multi-agent panel planning", () => {
+  it("keeps the imported reference descriptive and bounds the active panel to ten roles", () => {
+    expect(IMPORTED_PROFILE_REFERENCE.importedProfiles).toBe(26);
+    expect(IMPORTED_PROFILE_REFERENCE.activeRoles).toBe(10);
+    expect(PANEL_ROLE_DEFINITIONS).toHaveLength(10);
+  });
+
   it("keeps ten independent specialist roles and maps each to its preferred live model", () => {
     const models = PANEL_ROLE_DEFINITIONS.map((role) => role.preferredModel);
     const roles = buildRoleAssignments(models);

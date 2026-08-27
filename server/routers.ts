@@ -3,7 +3,7 @@ import { z } from "zod";
 import { askAssistant } from "./assistant";
 import { createAgentRunbook } from "./agent-runbook";
 import { importPublicGithubManifest } from "./github-manifest";
-import { runMultiAgentPanel } from "./multi-agent";
+import { IMPORTED_PROFILE_REFERENCE, PANEL_ROLE_DEFINITIONS, runMultiAgentPanel } from "./multi-agent";
 import { COOKIE_NAME } from "../shared/const.js";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -43,6 +43,11 @@ export const appRouter = router({
       intent: agentIntentSchema,
       context: z.string().max(12_000).optional(),
     })).mutation(({ input }) => runMultiAgentPanel(input)),
+    capabilities: publicProcedure.query(() => ({
+      importedReference: IMPORTED_PROFILE_REFERENCE,
+      roles: PANEL_ROLE_DEFINITIONS.map(({ id, title, focus }) => ({ id, title, focus })),
+      execution: "analysis_only" as const,
+    })),
   }),
   github: router({
     importManifest: publicProcedure.input(z.object({

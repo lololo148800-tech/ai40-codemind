@@ -40,6 +40,7 @@ export default function AgentScreen() {
 
   const createRunbook = trpc.agent.createRunbook.useMutation();
   const runPanel = trpc.agent.runPanel.useMutation();
+  const capabilities = trpc.agent.capabilities.useQuery();
   const runbook = createRunbook.data?.runbook;
   const panel = runPanel.data;
 
@@ -93,6 +94,12 @@ export default function AgentScreen() {
           <StatusPill label="10 ролей + синтез" tone="ready" />
           <Text style={styles.introTitle}>Многоагентный центр разработки</Text>
           <Text style={styles.introBody}>Десять независимых инженерных ролей анализируют одну цель параллельно, затем сильная модель собирает итог. Этот экран не имитирует правки, тесты или сборку APK: для таких действий нужен отдельный worker и точное подтверждение.</Text>
+        </Ai40Card>
+
+        <Ai40Card style={styles.referenceCard}>
+          <StatusPill label="Справочный импорт" tone="neutral" />
+          <Text style={styles.referenceTitle}>Mega AI Bot v3 добавлен в проект</Text>
+          <Text style={styles.referenceText}>{capabilities.data ? `Импортировано профилей: ${capabilities.data.importedReference.importedProfiles}; активных ролей панели: ${capabilities.data.importedReference.activeRoles}. Реальные model ID выбираются только из текущего server catalog.` : "Проверяю каталог ролей…"}</Text>
         </Ai40Card>
 
         <Ai40Card style={styles.formCard}>
@@ -197,6 +204,9 @@ const styles = StyleSheet.create({
   intro: { gap: 9, backgroundColor: "#F1FAF8", borderColor: "#CDEBE5" },
   introTitle: { color: palette.ink, fontSize: 16, fontWeight: "800" },
   introBody: { color: palette.muted, fontSize: 13, lineHeight: 19 },
+  referenceCard: { gap: 7, backgroundColor: "#F7F7FB", borderColor: "#DFE1EB" },
+  referenceTitle: { color: palette.ink, fontSize: 14, fontWeight: "800" },
+  referenceText: { color: palette.muted, fontSize: 12, lineHeight: 18 },
   formCard: { gap: 10 },
   label: { color: palette.ink, fontSize: 13, fontWeight: "800" },
   input: { minHeight: 112, borderWidth: 1, borderColor: palette.line, borderRadius: 14, backgroundColor: "#FAFAFC", color: palette.ink, padding: 12, fontSize: 13, lineHeight: 19 },
