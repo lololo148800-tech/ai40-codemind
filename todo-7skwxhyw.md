@@ -46,7 +46,11 @@
 - [x] Спроектировать расширяемые API-key scopes, streaming contract и worker-ready tool-loop.
 - [x] Реализовать потоковый AI40 gateway и UX-состояния coding-агента без копирования закрытого кода.
 - [x] Добавить тесты streaming/scopes и проверить совместимость Python-клиента.
-- [ ] Сохранить checkpoint расширенного coding workflow.
+- [x] Сохранить checkpoint расширенного coding workflow.
+- [x] Инвентаризировать Lordek hosting ZIP и Telegram Mini App handoff как недоверенные материалы без запуска вложенного кода.
+- [x] Выделить совместимые Telegram-ready и self-hosted gateway паттерны без обещания бесконечного compute.
+- [x] Реализовать конфигурационный Telegram-ready слой и self-hosted AI endpoint режим без ключа в мобильном клиенте.
+- [ ] Добавить security/config тесты, документацию запуска и сохранить checkpoint.
 - [x] Оценить предоставленный Code Engine v3 как недоверенный исходник и перенести только проверяемые паттерны без исполнения кода.
 - [x] Проверить GitHub-доступ и спроектировать approval-first CI workflow для тестов и Android APK.
 - [x] Реализовать streaming ответов, API-key scopes и worker-ready контракт coding-агента.

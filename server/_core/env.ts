@@ -7,4 +7,9 @@ export const ENV = {
   isProduction: process.env.NODE_ENV === "production",
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+  selfHostedLlmBaseUrl: process.env.AI40_SELF_HOSTED_BASE_URL ?? "",
+  selfHostedLlmApiKey: process.env.AI40_SELF_HOSTED_API_KEY ?? "",
+  telegramBotToken: process.env.TELEGRAM_BOT_TOKEN ?? "",
+  telegramWebhookSecret: process.env.TELEGRAM_WEBHOOK_SECRET ?? "",
+  appPublicUrl: process.env.APP_PUBLIC_URL ?? "",
 };

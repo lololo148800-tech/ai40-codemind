@@ -54,6 +54,16 @@ export default function SettingsScreen() {
         </View>
 
         <View>
+          <SectionTitle title="Инфраструктура" />
+          <Ai40Card style={styles.infoCard}>
+            <StatusPill label="Server-side only" tone="ready" />
+            <Text style={styles.infoTitle}>AI40 Gateway и Telegram</Text>
+            <Text style={styles.infoText}>Проверьте режим вычислений и безопасную готовность Telegram Mini App. Ключи провайдеров и токен бота не попадают в приложение.</Text>
+            <Pressable accessibilityRole="button" onPress={() => router.push("/infrastructure")} style={({ pressed }) => [styles.accessButton, pressed && styles.accessButtonPressed]}><Text style={styles.accessButtonText}>Открыть статус</Text></Pressable>
+          </Ai40Card>
+        </View>
+
+        <View>
           <SectionTitle title="О приложении" />
           <Ai40Card style={styles.infoCard}>
             <StatusPill label="AI 4.0 Unified Assistant" tone="ready" />

@@ -7,6 +7,8 @@ import { askAssistant } from "./assistant";
 import { createAgentRunbook } from "./agent-runbook";
 import { importPublicGithubManifest } from "./github-manifest";
 import { IMPORTED_ARCHIVES, IMPORTED_PROFILE_REFERENCE, PANEL_ROLE_DEFINITIONS, runMultiAgentPanel } from "./multi-agent";
+import { resolveAI40InferenceRuntime } from "./_core/llm";
+import { getTelegramIntegrationStatus } from "./telegram-ready";
 import { COOKIE_NAME } from "../shared/const.js";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -51,6 +53,15 @@ export const appRouter = router({
     revoke: protectedProcedure.input(z.object({
       keyId: z.number().int().positive(),
     })).mutation(({ ctx, input }) => revokeApiKey({ userId: ctx.user.id, keyId: input.keyId })),
+  }),
+  infrastructure: router({
+    status: protectedProcedure.query(() => {
+      const inference = resolveAI40InferenceRuntime();
+      return {
+        inference: { mode: inference.mode, requiresClientProviderKey: false },
+        telegram: getTelegramIntegrationStatus(),
+      };
+    }),
   }),
   assistant: router({
     chat: publicProcedure.input(z.object({

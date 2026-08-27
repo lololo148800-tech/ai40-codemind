@@ -6,6 +6,7 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { registerStorageProxy } from "./storageProxy";
 import { registerAI40Gateway } from "../ai40-gateway";
+import { registerTelegramReadyRoutes } from "../telegram-ready";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 
@@ -59,6 +60,7 @@ async function startServer() {
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   registerAI40Gateway(app);
+  registerTelegramReadyRoutes(app);
 
   app.get("/api/health", (_req, res) => {
     res.json({ ok: true, timestamp: Date.now() });

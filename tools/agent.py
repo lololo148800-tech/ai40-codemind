@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Universal ten-profile AI agent for OpenRouter.
+"""AI40 CodeMind: a universal ten-profile agent for an AI40 or OpenAI-compatible gateway.
 
 The program combines ten public prompt profiles into one agent workflow. It can
 send ordinary text, stream large text/code results to disk, ingest local files
@@ -7,16 +7,16 @@ and public URLs, summarize arbitrarily large text incrementally, send supported
 images/PDFs/audio/video as multimodal content, and generate images through the
 OpenRouter Images API.
 
-Quick start:
+Quick start with the AI40 gateway (recommended):
     pip install requests
-    export OPENROUTER_API_KEY="your-key"
-    export OPENROUTER_MODEL="provider/model-id"
-    export OPENROUTER_IMAGE_MODEL="provider/image-model-id"  # for /image
+    export AI40_API_KEY="ai40_live_..."
+    export AI40_API_BASE_URL="https://<project-api-domain>/api/v1"
+    export AI40_MODEL="ai40-code"
     python3 agent.py
 
-The prompt profile names and real OpenRouter model IDs are separate. Configure
-one fallback model with OPENROUTER_MODEL or a per-profile JSON map with
-OPENROUTER_MODEL_MAP. No API key is embedded in this file.
+AI40 API keys are project keys, not a universal replacement for third-party
+provider accounts. OpenRouter-compatible variables remain supported as an
+explicit fallback. No credential is embedded in this file.
 """
 from __future__ import annotations
 
@@ -351,7 +351,7 @@ def print_help() -> None:
   /ask [текст]            Обычный запрос активному профилю
   /agent [текст]          10 профилей → критик → финальный синтез
   /code [текст]           Режим генерации полного рабочего кода
-  /image [текст]          Сгенерировать изображение через OpenRouter Images API
+  /image [текст]          Сгенерировать изображение через доступный Images API
   /stream [текст]         Потоково вывести длинный ответ в файл
   /project [задача]       Команда: панель 10 профилей + инструменты проекта
   /tools [задача]         Алиас /project для чтения, правок и тестов
@@ -360,7 +360,7 @@ def print_help() -> None:
   /switch [модель]        Переключить активный профиль и сбросить контекст
   /list, /models          Показать профили и model ID
   /clear                  Очистить историю и текущие вложения
-  /router [model-id]      Задать общий fallback OpenRouter model ID
+  /router [model-id]      Задать AI40 alias или fallback model ID
   /help                   Показать эту справку
   /exit                   Завершить работу
 

@@ -204,14 +204,67 @@ const normalizeToolChoice = (
   return toolChoice;
 };
 
-const resolveApiUrl = () =>
-  ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
-    ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`
-    : "https://forge.manus.im/v1/chat/completions";
+export type AI40InferenceRuntime = {
+  mode: "managed" | "self_hosted";
+  apiBaseUrl: string;
+  chatUrl: string;
+  modelsUrl: string;
+  apiKey: string;
+};
 
-const assertApiKey = () => {
-  if (!ENV.forgeApiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
+/**
+ * Normalizes an administrator-configured OpenAI-compatible endpoint. The value
+ * never reaches Expo clients or external AI40 API-key callers.
+ */
+export function normalizeOpenAIBaseUrl(value: string, requireHttps: boolean) {
+  const parsed = new URL(value.trim());
+  if (!["http:", "https:"].includes(parsed.protocol)) {
+    throw new Error("AI40 self-hosted endpoint must use http or https.");
+  }
+  if (requireHttps && parsed.protocol !== "https:") {
+    throw new Error("AI40 self-hosted endpoint must use https in production.");
+  }
+  const path = parsed.pathname.replace(/\/+$/, "");
+  parsed.pathname = path.endsWith("/v1") ? path : `${path}/v1`;
+  parsed.search = "";
+  parsed.hash = "";
+  return parsed.toString().replace(/\/$/, "");
+}
+
+export function resolveAI40InferenceRuntime(input = {
+  selfHostedBaseUrl: ENV.selfHostedLlmBaseUrl,
+  selfHostedApiKey: ENV.selfHostedLlmApiKey,
+  forgeApiUrl: ENV.forgeApiUrl,
+  forgeApiKey: ENV.forgeApiKey,
+  isProduction: ENV.isProduction,
+}): AI40InferenceRuntime {
+  const selfHostedBaseUrl = input.selfHostedBaseUrl.trim();
+  if (selfHostedBaseUrl) {
+    const apiBaseUrl = normalizeOpenAIBaseUrl(selfHostedBaseUrl, input.isProduction);
+    return {
+      mode: "self_hosted",
+      apiBaseUrl,
+      chatUrl: `${apiBaseUrl}/chat/completions`,
+      modelsUrl: `${apiBaseUrl}/models`,
+      apiKey: input.selfHostedApiKey.trim(),
+    };
+  }
+
+  const apiBaseUrl = input.forgeApiUrl.trim().length > 0
+    ? `${input.forgeApiUrl.replace(/\/$/, "")}/v1`
+    : "https://forge.manus.im/v1";
+  return {
+    mode: "managed",
+    apiBaseUrl,
+    chatUrl: `${apiBaseUrl}/chat/completions`,
+    modelsUrl: `${apiBaseUrl}/models`,
+    apiKey: input.forgeApiKey,
+  };
+}
+
+const assertInferenceAccess = (runtime: AI40InferenceRuntime) => {
+  if (runtime.mode === "managed" && !runtime.apiKey) {
+    throw new Error("Managed AI40 inference is not configured.");
   }
 };
 
@@ -318,7 +371,8 @@ const fetchWithBackoff = async (url: string, init: FetchInit): Promise<Response>
 };
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
-  assertApiKey();
+  const runtime = resolveAI40InferenceRuntime();
+  assertInferenceAccess(runtime);
 
   const {
     messages,
@@ -376,11 +430,11 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.response_format = normalizedResponseFormat;
   }
 
-  const response = await fetchWithBackoff(resolveApiUrl(), {
+  const response = await fetchWithBackoff(runtime.chatUrl, {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
+      ...(runtime.apiKey ? { authorization: `Bearer ${runtime.apiKey}` } : {}),
     },
     body: JSON.stringify(payload),
   });
@@ -406,15 +460,11 @@ export type ModelsResponse = {
 };
 
 export async function listLLMModels(): Promise<ModelsResponse> {
-  assertApiKey();
+  const runtime = resolveAI40InferenceRuntime();
+  assertInferenceAccess(runtime);
 
-  const url =
-    ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
-      ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/models`
-      : "https://forge.manus.im/v1/models";
-
-  const response = await fetchWithBackoff(url, {
-    headers: { authorization: `Bearer ${ENV.forgeApiKey}` },
+  const response = await fetchWithBackoff(runtime.modelsUrl, {
+    headers: runtime.apiKey ? { authorization: `Bearer ${runtime.apiKey}` } : {},
   });
 
   if (!response.ok) {
