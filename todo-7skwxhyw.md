@@ -94,3 +94,12 @@
 - [x] Проверить доступность GitHub Actions и зафиксировать evidence первого workflow run.
 - [x] Усилить каталог agent-функций и статусы реального исполнения без копирования закрытых реализаций.
 - [x] Прогнать проверки, сохранить checkpoint и передать GitHub-результат.
+- [ ] Оценить устойчивый cloud-hosting, Android background limits и реалистичные offline-возможности.
+- [ ] Запустить GitHub Actions debug APK workflow и проверить его evidence/артефакт.
+- [ ] Реализовать offline-first локальный режим для памяти, draft, code review и Test Lab без сети.
+- [ ] Добавить health-check и recovery runbook без ложной гарантии бесконечной работы.
+- [ ] Прогнать регрессии, сохранить checkpoint и передать APK/offline результат.
+- [ ] Запустить GitHub Actions debug APK workflow и собрать проверяемый artifact evidence.
+- [ ] Спроектировать offline-first контур памяти, drafts, code review и Test Lab без сети.
+- [ ] Реализовать локальный offline-first режим, health endpoint и recovery UX без платного 24/7 hosting.
+- [ ] Проверить APK evidence, offline UX, полную регрессию и сохранить checkpoint.

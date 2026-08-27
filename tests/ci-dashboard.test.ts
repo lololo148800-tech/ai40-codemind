@@ -13,6 +13,13 @@ describe("AI40 CI dashboard", () => {
     });
   });
 
+  it("sets up Gradle only after Android sources are generated", () => {
+    const source = readFileSync(".github/workflows/ai40-android-debug-artifact.yml", "utf8");
+    expect(source).toContain("actions/setup-java@v5");
+    expect(source).not.toMatch(/Setup Java[\s\S]*?cache:\s*gradle/);
+    expect(source.indexOf("Generate Android project")).toBeLessThan(source.indexOf("Setup Gradle"));
+  });
+
   it("creates an approval-first GitHub connection plan", () => {
     const plan = buildCiConnectionPlan("https://github.com/owner/repo");
     expect(plan.repositoryUrl).toBe("https://github.com/owner/repo");
