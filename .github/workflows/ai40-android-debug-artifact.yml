@@ -1,0 +1,67 @@
+name: AI40 Android Debug Artifact
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Why this debug APK is required"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai40-android-debug-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  android-debug:
+    name: Quality gate and unsigned debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      CI: "true"
+      EXPO_NO_TELEMETRY: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Verify types
+        run: pnpm check
+      - name: Verify lint
+        run: pnpm lint
+      - name: Run tests
+        run: pnpm test
+      - name: Generate Android project
+        run: pnpm exec expo prebuild --platform android --no-install
+      - name: Build unsigned debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai40-debug-apk-${{ github.run_number }}
+          path: android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 7
+
+# This is deliberately not a production release pipeline. It creates an unsigned/debug APK
+# after the quality gate. A production release needs separately configured Android signing
+# secrets and an explicit reviewed workflow.

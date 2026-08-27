@@ -79,3 +79,13 @@
 - [x] Спроектировать Test Lab с планом качества, разбором логов и approval-first CI handoff.
 - [x] Реализовать Test Lab в server/mobile интерфейсе без неограниченного shell-доступа.
 - [x] Проверить изменения, зафиксировать размер и сохранить checkpoint.
+- [x] Оценить доступность GitHub и website-доступа, выбрать безопасный путь реального test execution.
+- [x] Спроектировать approval-first GitHub CI, website analysis и Android release contracts с evidence.
+- [x] Реализовать UI и server contracts подключения репозитория, анализа сайта и CI run reports.
+- [x] Добавить Android release workflow без хранения signing secrets и проверить integrations.
+- [x] Сохранить checkpoint и передать инструкции безопасного подключения доступа.
+- [x] Проверить текущий GitHub Actions workflow и определить cloud-only путь запуска проверок без пользовательского компьютера.
+- [x] Спроектировать GitHub CI evidence, public website analysis request и Android APK release contract.
+- [x] Реализовать GitHub CI Dashboard и безопасный анализ разрешённого сайта в AI40.
+- [x] Добавить release workflow APK без signing secrets и проверить полную регрессию.
+- [x] Сохранить checkpoint и передать шаги подключения GitHub.

@@ -29,6 +29,8 @@ const SOURCES = [
 export default function GithubScreen() {
   const [repositoryUrl, setRepositoryUrl] = useState("");
   const importer = trpc.github.importManifest.useMutation();
+  const ciRuns = trpc.ci.publicRuns.useMutation();
+  const ciPlan = trpc.ci.connectionPlan.useMutation();
   const openSource = (url: string) => {
     void WebBrowser.openBrowserAsync(url, {
       toolbarColor: palette.indigo,
@@ -42,6 +44,20 @@ export default function GithubScreen() {
       await importer.mutateAsync({ repositoryUrl: repositoryUrl.trim() });
     } catch (error) {
       Alert.alert("Не удалось получить manifest", error instanceof Error ? error.message : "Проверьте ссылку и повторите запрос.");
+    }
+  };
+  const loadCiRuns = async () => {
+    try {
+      await ciRuns.mutateAsync({ repositoryUrl: repositoryUrl.trim() });
+    } catch (error) {
+      Alert.alert("Не удалось получить CI runs", error instanceof Error ? error.message : "Проверьте публичную ссылку и повторите запрос.");
+    }
+  };
+  const prepareCiPlan = async () => {
+    try {
+      await ciPlan.mutateAsync({ repositoryUrl: repositoryUrl.trim() });
+    } catch (error) {
+      Alert.alert("Не удалось подготовить план", error instanceof Error ? error.message : "Проверьте публичную ссылку и повторите запрос.");
     }
   };
 
@@ -75,6 +91,21 @@ export default function GithubScreen() {
               <TextInput value={repositoryUrl} onChangeText={setRepositoryUrl} placeholder="https://github.com/owner/repository" placeholderTextColor="#8990A5" autoCapitalize="none" autoCorrect={false} keyboardType="url" editable={!importer.isPending} style={styles.urlInput} />
               <PrimaryButton label={importer.isPending ? "Получаю manifest…" : "Проверить manifest"} icon="account-tree" onPress={() => { void importManifest(); }} disabled={!repositoryUrl.trim() || importer.isPending} />
               {importer.data ? <View style={styles.manifestResult}><StatusPill label="Manifest готов" tone="ready" /><Text style={styles.manifestTitle}>{importer.data.fullName}</Text><Text style={styles.manifestMeta}>Ветка: {importer.data.defaultBranch} · записей: {importer.data.totalEntries}</Text><Text style={styles.manifestMeta}>Показано: {importer.data.files.length}{importer.data.truncated ? " · список ограничен" : ""}</Text></View> : null}
+            </Ai40Card>
+            <Ai40Card style={styles.ciCard}>
+              <View style={styles.importHeading}>
+                <MaterialIcons name="verified" size={21} color={palette.teal} />
+                <View style={styles.importCopy}>
+                  <Text style={styles.importTitle}>CI Dashboard</Text>
+                  <Text style={styles.importText}>Получает только публичные статусы GitHub Actions. Запуск workflow, pull request и APK остаются действиями с отдельным подтверждением в GitHub.</Text>
+                </View>
+              </View>
+              <View style={styles.ciButtons}>
+                <PrimaryButton label={ciPlan.isPending ? "Готовлю план…" : "План подключения"} icon="fact-check" tone="soft" onPress={() => { void prepareCiPlan(); }} style={styles.ciButton} disabled={!repositoryUrl.trim() || ciPlan.isPending} />
+                <PrimaryButton label={ciRuns.isPending ? "Проверяю…" : "Проверить CI"} icon="sync" onPress={() => { void loadCiRuns(); }} style={styles.ciButton} disabled={!repositoryUrl.trim() || ciRuns.isPending} />
+              </View>
+              {ciPlan.data ? <View style={styles.planResult}><StatusPill label="Approval-first" tone="warning" />{ciPlan.data.steps.map((step, index) => <Text style={styles.planStep} key={step}>{index + 1}. {step}</Text>)}<Text style={styles.manifestMeta}>{ciPlan.data.approvalRequired}</Text></View> : null}
+              {ciRuns.data ? <View style={styles.runsResult}><StatusPill label={`CI runs: ${ciRuns.data.runs.length}`} tone="ready" />{ciRuns.data.runs.length === 0 ? <Text style={styles.manifestMeta}>Workflow runs пока не найдены. Добавьте workflow в GitHub-репозиторий и откройте PR или запустите его вручную.</Text> : ciRuns.data.runs.map((run) => <View key={run.id} style={styles.run}><View style={styles.runHead}><Text style={styles.runName}>{run.name}</Text><StatusPill label={run.conclusion === "success" ? "success" : run.conclusion ?? run.status} tone={run.conclusion === "success" ? "ready" : run.status === "completed" ? "warning" : "neutral"} /></View><Text style={styles.manifestMeta}>{run.branch} · {run.headSha} · {run.event}</Text><PrimaryButton label="Открыть run" icon="open-in-new" tone="soft" onPress={() => openSource(run.url)} style={styles.runOpen} /></View>)}<Text style={styles.manifestMeta}>{ciRuns.data.evidenceBoundary}</Text></View> : null}
             </Ai40Card>
             <Text style={styles.listLabel}>Доступные источники · {SOURCES.length}</Text>
           </View>
@@ -113,12 +144,22 @@ const styles = StyleSheet.create({
   policyTitle: { color: palette.ink, fontSize: 14, fontWeight: "800" },
   policyText: { color: palette.muted, fontSize: 12, lineHeight: 18 },
   importCard: { gap: 11, backgroundColor: "#F5F6FF", borderColor: "#DADDFF" },
+  ciCard: { gap: 11, backgroundColor: "#F1FAF8", borderColor: "#CFEDE7" },
   importHeading: { flexDirection: "row", gap: 10, alignItems: "flex-start" },
   importCopy: { flex: 1, gap: 3 },
   importTitle: { color: palette.ink, fontSize: 14, fontWeight: "800" },
   importText: { color: palette.muted, fontSize: 12, lineHeight: 17 },
   urlInput: { minHeight: 44, borderWidth: 1, borderColor: "#D6DAEC", backgroundColor: "#FFFFFF", color: palette.ink, borderRadius: 12, paddingHorizontal: 12, fontSize: 13 },
   manifestResult: { paddingTop: 2, gap: 4 },
+  ciButtons: { flexDirection: "row", gap: 8 },
+  ciButton: { flex: 1, minHeight: 38, borderRadius: 11, paddingHorizontal: 8 },
+  planResult: { gap: 6, paddingTop: 2 },
+  planStep: { color: palette.ink, fontSize: 12, lineHeight: 18 },
+  runsResult: { gap: 8, paddingTop: 2 },
+  run: { gap: 5, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: "#CFEDE7", paddingTop: 9 },
+  runHead: { flexDirection: "row", alignItems: "center", gap: 8 },
+  runName: { flex: 1, color: palette.ink, fontSize: 13, fontWeight: "800" },
+  runOpen: { alignSelf: "flex-start", minHeight: 32, paddingHorizontal: 10, borderRadius: 10 },
   manifestTitle: { color: palette.ink, fontSize: 14, fontWeight: "800" },
   manifestMeta: { color: palette.muted, fontSize: 11, lineHeight: 16 },
   listLabel: { color: palette.muted, fontSize: 12, fontWeight: "700" },

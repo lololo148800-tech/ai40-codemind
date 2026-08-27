@@ -8,6 +8,8 @@ import { createAgentRunbook } from "./agent-runbook";
 import { AGENT_OUTPUT_FORMATS, inspectCodeSnippet, runBoundedAgent } from "./agent-runtime";
 import * as db from "./db";
 import { importPublicGithubManifest } from "./github-manifest";
+import { buildCiConnectionPlan, fetchPublicCiRuns } from "./ci-dashboard";
+import { inspectPublicWebsite } from "./website-analysis";
 import { IMPORTED_ARCHIVES, IMPORTED_PROFILE_REFERENCE, PANEL_ROLE_DEFINITIONS, runMultiAgentPanel } from "./multi-agent";
 import { resolveAI40InferenceRuntime } from "./_core/llm";
 import { getTelegramIntegrationStatus } from "./telegram-ready";
@@ -89,6 +91,13 @@ export const appRouter = router({
         telegram: getTelegramIntegrationStatus(),
       };
     }),
+  }),
+  ci: router({
+    connectionPlan: protectedProcedure.input(z.object({ repositoryUrl: z.string().trim().url().max(500) }).strict()).mutation(({ input }) => buildCiConnectionPlan(input.repositoryUrl)),
+    publicRuns: protectedProcedure.input(z.object({ repositoryUrl: z.string().trim().url().max(500) }).strict()).mutation(({ input }) => fetchPublicCiRuns(input.repositoryUrl)),
+  }),
+  website: router({
+    inspectPublic: protectedProcedure.input(z.object({ url: z.string().trim().url().max(1_500) }).strict()).mutation(({ input }) => inspectPublicWebsite(input.url)),
   }),
   assistant: router({
     chat: publicProcedure.input(z.object({
