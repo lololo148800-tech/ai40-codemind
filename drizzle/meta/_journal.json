@@ -15,6 +15,13 @@
       "when": 1787801531855,
       "tag": "0001_great_ken_ellis",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1787834797742,
+      "tag": "0002_loose_the_executioner",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { index, int, mysqlEnum, mysqlTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -40,3 +40,20 @@ export const apiKeys = mysqlTable("apiKeys", {
 
 export type ApiKey = typeof apiKeys.$inferSelect;
 export type InsertApiKey = typeof apiKeys.$inferInsert;
+
+/** Explicit, user-owned facts that may be selected by the bounded AI40 runtime. */
+export const agentMemories = mysqlTable("agentMemories", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  scope: varchar("scope", { length: 32 }).notNull(),
+  memoryKey: varchar("memoryKey", { length: 120 }).notNull(),
+  value: text("value").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => [
+  uniqueIndex("agent_memories_user_scope_key_unique").on(table.userId, table.scope, table.memoryKey),
+  index("agent_memories_user_updated_idx").on(table.userId, table.updatedAt),
+]);
+
+export type AgentMemory = typeof agentMemories.$inferSelect;
+export type InsertAgentMemory = typeof agentMemories.$inferInsert;

@@ -5,6 +5,8 @@ import { createSlidingWindowLimiter, requestIdentity } from "./analysis-guard";
 import { AI40_API_KEY_SCOPES, API_KEY_SCOPE, authenticateApiKey, extractApiKey, issueApiKey, listApiKeys, revokeApiKey } from "./api-keys";
 import { askAssistant } from "./assistant";
 import { createAgentRunbook } from "./agent-runbook";
+import { AGENT_OUTPUT_FORMATS, runBoundedAgent } from "./agent-runtime";
+import * as db from "./db";
 import { importPublicGithubManifest } from "./github-manifest";
 import { IMPORTED_ARCHIVES, IMPORTED_PROFILE_REFERENCE, PANEL_ROLE_DEFINITIONS, runMultiAgentPanel } from "./multi-agent";
 import { resolveAI40InferenceRuntime } from "./_core/llm";
@@ -53,6 +55,26 @@ export const appRouter = router({
     revoke: protectedProcedure.input(z.object({
       keyId: z.number().int().positive(),
     })).mutation(({ ctx, input }) => revokeApiKey({ userId: ctx.user.id, keyId: input.keyId })),
+  }),
+  agentRuntime: router({
+    memory: protectedProcedure.query(({ ctx }) => db.listAgentMemories(ctx.user.id)),
+    saveMemory: protectedProcedure.input(z.object({
+      scope: z.enum(["personal", "project"]).default("project"),
+      key: z.string().trim().min(2).max(120),
+      value: z.string().trim().min(2).max(2_000),
+    })).mutation(async ({ ctx, input }) => {
+      await db.putAgentMemory({ userId: ctx.user.id, scope: input.scope, memoryKey: input.key, value: input.value });
+      return { ok: true };
+    }),
+    deleteMemory: protectedProcedure.input(z.object({ memoryId: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
+      await db.deleteAgentMemory(ctx.user.id, input.memoryId);
+      return { ok: true };
+    }),
+    run: protectedProcedure.input(z.object({
+      goal: z.string().trim().min(3).max(6_000),
+      context: z.string().trim().max(12_000).optional(),
+      outputFormat: z.enum(AGENT_OUTPUT_FORMATS).optional(),
+    })).mutation(({ ctx, input }) => runBoundedAgent({ userId: ctx.user.id, ...input })),
   }),
   infrastructure: router({
     status: protectedProcedure.query(() => {

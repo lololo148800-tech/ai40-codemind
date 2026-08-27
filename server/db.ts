@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { agentMemories, type InsertAgentMemory, InsertUser, users } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,34 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function listAgentMemories(userId: number, limit = 30) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(agentMemories).where(eq(agentMemories.userId, userId)).orderBy(desc(agentMemories.updatedAt)).limit(limit);
+}
+
+export async function searchAgentMemories(userId: number, query: string, limit = 5) {
+  const terms = query.toLocaleLowerCase("ru-RU").split(/\s+/).filter((term) => term.length >= 2).slice(0, 8);
+  if (!terms.length) return [];
+  const memories = await listAgentMemories(userId, 60);
+  return memories
+    .filter((memory) => {
+      const haystack = `${memory.memoryKey} ${memory.value}`.toLocaleLowerCase("ru-RU");
+      return terms.some((term) => haystack.includes(term));
+    })
+    .slice(0, limit);
+}
+
+export async function putAgentMemory(input: Pick<InsertAgentMemory, "userId" | "scope" | "memoryKey" | "value">) {
+  const db = await getDb();
+  if (!db) throw new Error("База данных недоступна: явную память пока нельзя сохранить.");
+  await db.insert(agentMemories).values(input).onDuplicateKeyUpdate({
+    set: { value: input.value, updatedAt: new Date() },
+  });
+}
+
+export async function deleteAgentMemory(userId: number, memoryId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("База данных недоступна: явную память пока нельзя удалить.");
+  await db.delete(agentMemories).where(and(eq(agentMemories.id, memoryId), eq(agentMemories.userId, userId)));
+}

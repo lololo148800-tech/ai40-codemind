@@ -51,6 +51,12 @@ export default function SettingsScreen() {
             <Text style={styles.infoText}>Создавайте и отзывайте API-ключи для внешнего доступа к многоагентному анализу. Полный ключ показывается один раз, а на сервере сохраняется только его хеш.</Text>
             <Pressable accessibilityRole="button" onPress={() => router.push("/api-keys")} style={({ pressed }) => [styles.accessButton, pressed && styles.accessButtonPressed]}><Text style={styles.accessButtonText}>Управлять API-ключами</Text></Pressable>
           </Ai40Card>
+          <Ai40Card style={styles.infoCard}>
+            <StatusPill label="Explicit memory" tone="neutral" />
+            <Text style={styles.infoTitle}>Память агента</Text>
+            <Text style={styles.infoText}>Сохраняйте короткие факты о проекте, которые агент сможет найти только по вашей задаче. Записи принадлежат вашему аккаунту и не являются системными инструкциями.</Text>
+            <Pressable accessibilityRole="button" onPress={() => router.push("/memory")} style={({ pressed }) => [styles.accessButton, pressed && styles.accessButtonPressed]}><Text style={styles.accessButtonText}>Управлять памятью</Text></Pressable>
+          </Ai40Card>
         </View>
 
         <View>

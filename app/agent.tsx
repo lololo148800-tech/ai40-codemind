@@ -5,6 +5,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 
 
 import { Ai40Card, IconAction, palette, PrimaryButton, ScreenTitle, SectionTitle, StatusPill } from "@/components/ai40-ui";
 import { ScreenContainer } from "@/components/screen-container";
+import { useAuth } from "@/hooks/use-auth";
 import { trpc } from "@/lib/trpc";
 
 const INTENTS = [
@@ -44,9 +45,12 @@ export default function AgentScreen() {
   const [intent, setIntent] = useState<PanelIntent>("code_review");
   const [context, setContext] = useState("");
   const [error, setError] = useState("");
+  const [outputFormat, setOutputFormat] = useState<"text" | "action_plan">("text");
+  const { isAuthenticated } = useAuth();
 
   const createRunbook = trpc.agent.createRunbook.useMutation();
   const runPanel = trpc.agent.runPanel.useMutation();
+  const boundedAgent = trpc.agentRuntime.run.useMutation();
   const capabilities = trpc.agent.capabilities.useQuery();
   const runbook = createRunbook.data?.runbook;
   const panel = runPanel.data;
@@ -85,6 +89,22 @@ export default function AgentScreen() {
     );
   };
 
+  const requestBoundedRun = () => {
+    if (!isAuthenticated) {
+      setError("Для проверяемого agent runtime войдите в проект: он использует только вашу явную память.");
+      return;
+    }
+    if (goal.trim().length < 3) {
+      setError("Опишите цель минимум тремя символами.");
+      return;
+    }
+    Alert.alert(
+      "Запустить проверяемый agent runtime?",
+      "Он может искать только вашу явную память. Любые правки файлов или внешние действия остановятся на предложении и потребуют отдельного подтверждения.",
+      [{ text: "Отмена", style: "cancel" }, { text: "Запустить", onPress: () => { setError(""); void boundedAgent.mutateAsync({ goal: goal.trim(), context: context.trim() || undefined, outputFormat }).catch((value) => setError(value instanceof Error ? value.message : "Не удалось запустить bounded agent.")); } }],
+    );
+  };
+
   return (
     <ScreenContainer className="px-4" edges={["top", "bottom", "left", "right"]} containerClassName="bg-background">
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
@@ -120,7 +140,7 @@ export default function AgentScreen() {
 
         <Ai40Card style={styles.formCard}>
           <Text style={styles.label}>Цель задачи</Text>
-          <TextInput value={goal} onChangeText={setGoal} multiline style={styles.input} placeholder="Опишите цель" placeholderTextColor="#7886A8" textAlignVertical="top" editable={!createRunbook.isPending && !runPanel.isPending} />
+          <TextInput value={goal} onChangeText={setGoal} multiline style={styles.input} placeholder="Опишите цель" placeholderTextColor="#7886A8" textAlignVertical="top" editable={!createRunbook.isPending && !runPanel.isPending && !boundedAgent.isPending} />
           <Text style={styles.label}>Режим панели</Text>
           <View style={styles.intentRow}>
             {INTENTS.map((item) => (
@@ -130,10 +150,19 @@ export default function AgentScreen() {
             ))}
           </View>
           <Text style={styles.label}>Контекст для анализа — необязательно</Text>
-          <TextInput value={context} onChangeText={setContext} multiline maxLength={12_000} style={styles.contextInput} placeholder="Вставьте фрагмент кода, лог ошибки или публичный URL. Это недоверенный контекст." placeholderTextColor="#7886A8" textAlignVertical="top" editable={!runPanel.isPending} />
+          <TextInput value={context} onChangeText={setContext} multiline maxLength={12_000} style={styles.contextInput} placeholder="Вставьте фрагмент кода, лог ошибки или публичный URL. Это недоверенный контекст." placeholderTextColor="#7886A8" textAlignVertical="top" editable={!runPanel.isPending && !boundedAgent.isPending} />
+          <Text style={styles.label}>Формат проверяемого runtime</Text>
+          <View style={styles.intentRow}>
+            {([{ id: "text", label: "Текст" }, { id: "action_plan", label: "JSON-план" }] as const).map((item) => (
+              <Pressable key={item.id} accessibilityRole="button" onPress={() => setOutputFormat(item.id)} style={({ pressed }) => [styles.intentChip, outputFormat === item.id && styles.intentChipActive, pressed && styles.intentChipPressed]}>
+                <Text style={[styles.intentText, outputFormat === item.id && styles.intentTextActive]}>{item.label}</Text>
+              </Pressable>
+            ))}
+          </View>
           <Text style={styles.hint}>Runbook создаёт быстрый план без LLM-вызовов. Полный запуск передаёт на сервер только цель и контекст после вашего подтверждения.</Text>
           <PrimaryButton label={createRunbook.isPending ? "Создаю runbook…" : "Создать runbook"} onPress={() => { void buildRunbook(); }} icon="smart-toy" disabled={createRunbook.isPending || runPanel.isPending} />
           <PrimaryButton label={runPanel.isPending ? "Панель анализирует…" : "Запустить анализ из 10 ролей"} onPress={requestPanelRun} icon="auto-awesome" disabled={runPanel.isPending || createRunbook.isPending} />
+          <PrimaryButton label={boundedAgent.isPending ? "Runtime работает…" : "Запустить проверяемый agent runtime"} onPress={requestBoundedRun} icon="rule" disabled={boundedAgent.isPending || createRunbook.isPending || runPanel.isPending} />
         </Ai40Card>
 
         {error ? <Ai40Card style={styles.errorCard}><Text style={styles.errorText}>{error}</Text></Ai40Card> : null}
@@ -154,6 +183,20 @@ export default function AgentScreen() {
                 </View>
               ))}
               {runbook.constraints.map((constraint) => <Text style={styles.constraint} key={constraint}>• {constraint}</Text>)}
+            </Ai40Card>
+          </View>
+        ) : null}
+
+        {boundedAgent.data ? (
+          <View style={styles.runbook}>
+            <SectionTitle title="Проверяемый agent runtime" caption={boundedAgent.data.status.replaceAll("_", " ")} />
+            <Ai40Card style={boundedAgent.data.status === "completed" ? styles.resultCard : styles.blockedCard}>
+              <StatusPill label={boundedAgent.data.status.replaceAll("_", " ")} tone={boundedAgent.data.status === "completed" ? "ready" : boundedAgent.data.status === "approval_required" ? "warning" : "blocked"} />
+              <Text style={styles.resultTitle}>{boundedAgent.data.content}</Text>
+              <Text style={styles.gateText}>Явной памяти использовано: {boundedAgent.data.memoryCount}. Событий audit: {boundedAgent.data.events.length}.</Text>
+              {"proposal" in boundedAgent.data && boundedAgent.data.proposal ? <Text style={styles.evidenceText}>Предложение ожидает отдельного подтверждения: {boundedAgent.data.proposal.tool}</Text> : null}
+              {"structured" in boundedAgent.data && boundedAgent.data.structured ? <View style={styles.synthesisBox}><Text style={styles.synthesisLabel}>Проверенный JSON-план</Text>{boundedAgent.data.structured.steps.map((step) => <Text style={styles.gateText} key={step.title}>• {step.title} — {step.verification}</Text>)}</View> : null}
+              <Text style={styles.executionNote}>Runtime не имеет shell, записи файлов, отправки сообщений, загрузки файлов или APK-build tool.</Text>
             </Ai40Card>
           </View>
         ) : null}
