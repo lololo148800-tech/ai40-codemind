@@ -1,28 +1,35 @@
+import { z } from "zod";
+
+import { askAssistant } from "./assistant";
 import { COOKIE_NAME } from "../shared/const.js";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 
+const assistantModeSchema = z.enum(["question", "research", "code", "create"]);
+const assistantHistorySchema = z.array(z.object({
+  role: z.enum(["user", "assistant"]),
+  content: z.string().min(1).max(4_000),
+})).max(10);
+
 export const appRouter = router({
-  // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return {
-        success: true,
-      } as const;
+      return { success: true } as const;
     }),
   }),
-
-  // TODO: add feature routers here, e.g.
-  // todo: router({
-  //   list: protectedProcedure.query(({ ctx }) =>
-  //     db.getUserTodos(ctx.user.id)
-  //   ),
-  // }),
+  assistant: router({
+    chat: publicProcedure.input(z.object({
+      mode: assistantModeSchema,
+      message: z.string().trim().min(1).max(6_000),
+      history: assistantHistorySchema.optional(),
+      context: z.string().max(12_000).optional(),
+    })).mutation(({ input }) => askAssistant(input)),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

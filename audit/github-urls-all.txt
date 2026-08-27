@@ -1,0 +1,10 @@
+https://github.com/asgeirtj/system_prompts_leaks
+https://github.com/cargicar/alsc
+https://github.com/elder-plinius/CL4R1T4S
+https://github.com/features/copilot
+https://github.com/google-gemini/gemini-cli
+https://github.com/hanlicq/system_prompts_leaks
+https://github.com/owner/repo
+https://github.com/owner/repo.git
+https://github.com/owner/repository
+https://github.com/owner/repository.

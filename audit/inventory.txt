@@ -1,0 +1,285 @@
+# Инвентаризация пользовательских материалов
+
+## Файлы
+ai40_codemind_v7_full_source.zip | 2988 KB
+ai40_complete_guide_ru.md | 120 KB
+ai40_research_findings_ru.md | 32 KB
+ai40_research_scope_ru.md | 4 KB
+architecture.md | 8 KB
+manus_ai_100_complete_bundle.zip | 208 KB
+manus_capabilities_guide_ru.md | 64 KB
+manus_rare_capabilities_findings.md | 24 KB
+security.md | 8 KB
+ллллл.txt | 196 KB
+
+## GitHub-ссылки в текстовых файлах
+./ai40_research_findings_ru.md:29:Официальная страница описывает Copilot как систему, работающую в GitHub, IDE, CLI, project tools и чатах, с поддержкой custom agents, third-party agents и MCP servers. Copilot включает inline suggestions, chat, agent mode в IDE, code explanations, cloud agents, code review и Spaces как общую базу знаний по документации и репозиториям. Copilot cloud agent может планировать, исследовать и выполнять работу в фоне, а GitHub позволяет отслеживать несколько агентов и сливать готовые изменения. Доступны расширения для VS Code, Visual Studio, JetBrains, Neovim, Eclipse, Xcode, мобильного GitHub и CLI. Источник: https://github.com/features/copilot
+./ai40_research_findings_ru.md:119:Официальный репозиторий Google описывает Gemini CLI как open-source terminal AI agent. Есть built-in Google Search grounding, file operations, shell commands, web fetching, MCP, non-interactive scripting, multimodal generation from PDFs/images/sketches, GitHub Action, checkpointing, GEMINI.md, token caching, custom commands, headless mode, sandboxing и trusted folders. Output можно получать как text, JSON или stream-json, что делает CLI пригодным для автоматизации и мониторинга долгих операций. Источник: https://github.com/google-gemini/gemini-cli
+./ллллл.txt:4405:    "claude_code_repo": "https://github.com/cargicar/alsc",
+./ллллл.txt:4406:    "prompts_repo": "https://github.com/asgeirtj/system_prompts_leaks",
+./ллллл.txt:4407:    "prompts_repo2": "https://github.com/hanlicq/system_prompts_leaks",
+./ллллл.txt:4408:    "clarity_repo": "https://github.com/elder-plinius/CL4R1T4S",
+./ллллл.txt:4623:🔗 https://github.com/cargicar/alsc
+./ллллл.txt:4643:🔗 https://github.com/asgeirtj/system_prompts_leaks
+./ллллл.txt:4649:🔗 https://github.com/hanlicq/system_prompts_leaks
+./ллллл.txt:4655:🔗 https://github.com/elder-plinius/CL4R1T4S
+./ллллл.txt:4663:· Claude Opus 5 (полный системный промпт на 135 тыс. символов): https://github.com/asgeirtj/system_prompts_leaks/blob/main/Anthropic/claude-opus-5.md
+./ллллл.txt:4664:· Claude Fable 5: https://github.com/asgeirtj/system_prompts_leaks/blob/main/Anthropic/claude-fable-5.md
+./ллллл.txt:4665:· Claude Sonnet 5: https://github.com/asgeirtj/system_prompts_leaks/blob/main/Anthropic/claude-sonnet-5.md
+./ллллл.txt:4666:· Claude Code (Fable 5): https://github.com/asgeirtj/system_prompts_leaks/blob/main/Anthropic/claude-code-fable5.md
+./ллллл.txt:4667:· Claude Code (Opus 5): https://github.com/asgeirtj/system_prompts_leaks/blob/main/Anthropic/claude-code-opus5.md
+./ллллл.txt:4668:· Claude Cowork: https://github.com/asgeirtj/system_prompts_leaks/blob/main/Anthropic/claude-cowork.md
+./ллллл.txt:4669:· Claude Design (полный промпт + 53 инструмента + 22 скилла + 10 стартовых компонентов): https://github.com/asgeirtj/system_prompts_leaks/blob/main/Anthropic/claude-design.md
+./ллллл.txt:4673:· ChatGPT 5.6 Sol: https://github.com/asgeirtj/system_prompts_leaks/blob/main/OpenAI/chatgpt-5.6-sol.md
+./ллллл.txt:4674:· Codex GPT-5.6: https://github.com/asgeirtj/system_prompts_leaks/blob/main/OpenAI/codex-gpt-5.6.md
+./ллллл.txt:4675:· ChatGPT 5.5 Thinking: https://github.com/asgeirtj/system_prompts_leaks/blob/main/OpenAI/chatgpt-5.5-thinking.md
+./ллллл.txt:4679:· Gemini 3.7 Flash: https://github.com/asgeirtj/system_prompts_leaks/blob/main/Google/gemini-3.7-flash.md
+./ллллл.txt:4680:· Gemini 3.1 Pro: https://github.com/asgeirtj/system_prompts_leaks/blob/main/Google/gemini-3.1-pro.md
+./ллллл.txt:4681:· Gemini 3 Flash: https://github.com/asgeirtj/system_prompts_leaks/blob/main/Google/gemini-3-flash.md
+./ллллл.txt:4685:· Grok 4.5: https://github.com/asgeirtj/system_prompts_leaks/blob/main/xAI/grok-4.5.md
+./ллллл.txt:4686:· Perplexity AI: https://github.com/asgeirtj/system_prompts_leaks/blob/main/Perplexity/perplexity-ai.md
+./ллллл.txt:4687:· Cursor (реальный системный промпт Claude 3.5 Sonnet в Cursor): https://github.com/elder-plinius/CL4R1T4S/blob/main/CURSOR/Cursor_Prompt.md
+./ллллл.txt:4688:· Codex (OpenAI): https://github.com/elder-plinius/CL4R1T4S/blob/main/OPENAI/Codex.md
+./ai40_complete_guide_ru.md:809:[22]: https://github.com/features/copilot "GitHub Copilot"
+./ai40_complete_guide_ru.md:813:[26]: https://github.com/google-gemini/gemini-cli "Google Gemini CLI"
+
+## Состав manus_ai_100_complete_bundle.zip
+Archive:  manus_ai_100_complete_bundle.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  2026-08-26 23:28   manus_local_replica/
+        0  2026-08-26 23:28   manus_local_replica/agent_runtime/
+     2920  2026-08-26 23:16   manus_local_replica/agent_runtime/schemas.py
+     3682  2026-08-26 23:21   manus_local_replica/agent_runtime/memory.py
+     2980  2026-08-26 23:18   manus_local_replica/agent_runtime/model_client.py
+     2389  2026-08-26 23:18   manus_local_replica/agent_runtime/policy.py
+     9611  2026-08-26 23:28   manus_local_replica/agent_runtime/runtime.py
+      513  2026-08-26 23:18   manus_local_replica/agent_runtime/__init__.py
+     1949  2026-08-26 23:20   manus_local_replica/agent_runtime/rag.py
+     2335  2026-08-26 23:24   manus_local_replica/agent_runtime/planner.py
+     1579  2026-08-26 23:25   manus_local_replica/agent_runtime/router.py
+     1628  2026-08-26 23:25   manus_local_replica/agent_runtime/skills.py
+     1849  2026-08-26 23:25   manus_local_replica/agent_runtime/orchestrator.py
+     3201  2026-08-26 23:25   manus_local_replica/agent_runtime/scheduler.py
+        0  2026-08-26 23:28   manus_local_replica/tools/
+     1244  2026-08-26 23:17   manus_local_replica/tools/registry.py
+     5991  2026-08-26 23:17   manus_local_replica/tools/builtin.py
+      206  2026-08-26 23:19   manus_local_replica/tools/__init__.py
+        0  2026-08-26 23:28   manus_local_replica/tests/
+     3767  2026-08-26 23:22   manus_local_replica/tests/test_runtime.py
+        0  2026-08-26 23:36   manus_local_replica/docs/
+     6441  2026-08-26 23:20   manus_local_replica/docs/architecture.md
+   121904  2026-08-26 23:20   manus_local_replica/docs/ai40_complete_guide_ru.md
+    32391  2026-08-26 23:20   manus_local_replica/docs/ai40_research_findings_ru.md
+     4004  2026-08-26 23:20   manus_local_replica/docs/ai40_research_scope_ru.md
+    40565  2026-08-26 23:20   manus_local_replica/docs/manus_unusual_hidden_capabilities_ru.md
+    64349  2026-08-26 23:20   manus_local_replica/docs/manus_capabilities_guide_ru.md
+     5791  2026-08-26 23:20   manus_local_replica/docs/security.md
+     4228  2026-08-26 23:22   manus_local_replica/docs/replication_boundary.md
+   195175  2026-08-26 23:36   manus_local_replica/docs/ai100_complete_guide_ru.md
+     6387  2026-08-26 23:36   manus_local_replica/docs/ai100_scope_ru.md
+     7375  2026-08-26 23:36   manus_local_replica/docs/ai100_research_findings_ru.md
+    73023  2026-08-26 23:36   manus_local_replica/docs/ai60_additional_catalog_ru.md
+        0  2026-08-26 23:20   manus_local_replica/knowledge/
+      569  2026-08-26 23:20   manus_local_replica/knowledge/demo_note.md
+        0  2026-08-26 23:16   manus_local_replica/artifacts/
+     2223  2026-08-26 23:18   manus_local_replica/run.py
+     3919  2026-08-26 23:27   manus_local_replica/server.py
+       62  2026-08-26 23:19   manus_local_replica/requirements.txt
+      288  2026-08-26 23:19   manus_local_replica/.env.example
+    14922  2026-08-26 23:36   manus_local_replica/README.md
+        0  2026-08-26 23:20   manus_local_replica/examples/
+      290  2026-08-26 23:20   manus_local_replica/examples/answer_schema.json
+      410  2026-08-26 23:21   manus_local_replica/Dockerfile
+      548  2026-08-26 23:21   manus_local_replica/docker-compose.yml
+        0  2026-08-26 23:25   manus_local_replica/skills/
+      529  2026-08-26 23:25   manus_local_replica/skills/research_report.json
+        0  2026-08-26 23:25   manus_local_replica/static/
+     3033  2026-08-26 23:25   manus_local_replica/static/index.html
+        0  2026-08-26 23:28   manus_local_replica/evals/
+      750  2026-08-26 23:26   manus_local_replica/evals/cases.jsonl
+     1880  2026-08-26 23:26   manus_local_replica/evals/run_evals.py
+      140  2026-08-26 23:22   manus_local_replica/.gitignore
+        0  2026-08-26 23:22   manus_local_replica/workspace/
+        0  2026-08-26 23:22   manus_local_replica/workspace/.gitkeep
+---------                     -------
+   637040                     55 files
+
+## Состав ai40_codemind_v7_full_source.zip
+Archive:  ai40_codemind_v7_full_source.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  2026-08-26 23:20   ai40_codemind_mobile/
+      650  2026-08-25 10:32   ai40_codemind_mobile/.gitignore
+       20  2026-08-25 10:32   ai40_codemind_mobile/.npmrc
+       46  2026-08-25 10:32   ai40_codemind_mobile/.watchmanconfig
+        0  2026-08-26 23:19   ai40_codemind_mobile/app/
+        0  2026-08-25 10:36   ai40_codemind_mobile/app/(tabs)/
+     1538  2026-08-25 10:37   ai40_codemind_mobile/app/(tabs)/_layout.tsx
+     4220  2026-08-25 10:36   ai40_codemind_mobile/app/(tabs)/index.tsx
+     8411  2026-08-26 23:19   ai40_codemind_mobile/app/(tabs)/workspace.tsx
+     6183  2026-08-25 10:47   ai40_codemind_mobile/app/(tabs)/research.tsx
+     7476  2026-08-25 15:07   ai40_codemind_mobile/app/(tabs)/history.tsx
+     4527  2026-08-26 23:19   ai40_codemind_mobile/app/_layout.tsx
+        0  2026-08-25 10:32   ai40_codemind_mobile/app/dev/
+     8890  2026-08-25 10:32   ai40_codemind_mobile/app/dev/theme-lab.tsx
+        0  2026-08-25 10:32   ai40_codemind_mobile/app/oauth/
+    10493  2026-08-25 10:32   ai40_codemind_mobile/app/oauth/callback.tsx
+     9881  2026-08-25 15:05   ai40_codemind_mobile/app/chat.tsx
+     3934  2026-08-25 10:45   ai40_codemind_mobile/app/create.tsx
+     6057  2026-08-25 10:40   ai40_codemind_mobile/app/scan.tsx
+     4066  2026-08-25 10:47   ai40_codemind_mobile/app/settings.tsx
+     3110  2026-08-25 10:40   ai40_codemind_mobile/app/camera.tsx
+     4925  2026-08-25 15:17   ai40_codemind_mobile/app/project-import.tsx
+        0  2026-08-25 15:17   ai40_codemind_mobile/app/project/
+    15509  2026-08-25 17:21   ai40_codemind_mobile/app/project/[id].tsx
+     9631  2026-08-25 16:02   ai40_codemind_mobile/app/coding-plan.tsx
+        0  2026-08-25 17:20   ai40_codemind_mobile/app/project-profile/
+     6654  2026-08-25 17:20   ai40_codemind_mobile/app/project-profile/[id].tsx
+     5823  2026-08-25 22:13   ai40_codemind_mobile/app/execution.tsx
+     9099  2026-08-26 23:20   ai40_codemind_mobile/app/agent.tsx
+     4016  2026-08-25 10:44   ai40_codemind_mobile/app.config.ts
+        0  2026-08-25 10:32   ai40_codemind_mobile/assets/
+        0  2026-08-25 10:32   ai40_codemind_mobile/assets/images/
+    17549  2026-08-25 10:32   ai40_codemind_mobile/assets/images/android-icon-background.png
+   665009  2026-08-25 14:47   ai40_codemind_mobile/assets/images/android-icon-foreground.png
+     4140  2026-08-25 10:32   ai40_codemind_mobile/assets/images/android-icon-monochrome.png
+   665009  2026-08-25 14:47   ai40_codemind_mobile/assets/images/favicon.png
+   665009  2026-08-25 14:47   ai40_codemind_mobile/assets/images/icon.png
+     5075  2026-08-25 10:32   ai40_codemind_mobile/assets/images/partial-react-logo.png
+     6341  2026-08-25 10:32   ai40_codemind_mobile/assets/images/react-logo.png
+    14225  2026-08-25 10:32   ai40_codemind_mobile/assets/images/react-logo@2x.png
+    21252  2026-08-25 10:32   ai40_codemind_mobile/assets/images/react-logo@3x.png
+   665009  2026-08-25 14:47   ai40_codemind_mobile/assets/images/splash-icon.png
+      248  2026-08-25 10:32   ai40_codemind_mobile/babel.config.js
+        0  2026-08-25 10:36   ai40_codemind_mobile/components/
+      794  2026-08-25 10:32   ai40_codemind_mobile/components/external-link.tsx
+      564  2026-08-25 10:32   ai40_codemind_mobile/components/haptic-tab.tsx
+      410  2026-08-25 10:32   ai40_codemind_mobile/components/hello-wave.tsx
+     2102  2026-08-25 10:32   ai40_codemind_mobile/components/parallax-scroll-view.tsx
+     1661  2026-08-25 10:32   ai40_codemind_mobile/components/screen-container.tsx
+      461  2026-08-25 10:32   ai40_codemind_mobile/components/themed-view.tsx
+        0  2026-08-25 10:32   ai40_codemind_mobile/components/ui/
+     1004  2026-08-25 10:32   ai40_codemind_mobile/components/ui/collapsible.tsx
+      598  2026-08-25 10:32   ai40_codemind_mobile/components/ui/icon-symbol.ios.tsx
+     1422  2026-08-25 10:32   ai40_codemind_mobile/components/ui/icon-symbol.tsx
+     4071  2026-08-25 10:36   ai40_codemind_mobile/components/ai40-ui.tsx
+        0  2026-08-25 10:32   ai40_codemind_mobile/constants/
+      275  2026-08-25 10:32   ai40_codemind_mobile/constants/const.ts
+     4119  2026-08-25 10:32   ai40_codemind_mobile/constants/oauth.ts
+      275  2026-08-25 10:32   ai40_codemind_mobile/constants/theme.ts
+        0  2026-08-26 23:17   ai40_codemind_mobile/drizzle/
+      483  2026-08-25 10:32   ai40_codemind_mobile/drizzle/0000_elite_eternals.sql
+        0  2026-08-26 23:17   ai40_codemind_mobile/drizzle/meta/
+     2546  2026-08-25 10:32   ai40_codemind_mobile/drizzle/meta/0000_snapshot.json
+     1077  2026-08-26 23:17   ai40_codemind_mobile/drizzle/meta/_journal.json
+    12627  2026-08-25 14:55   ai40_codemind_mobile/drizzle/meta/0001_snapshot.json
+    13022  2026-08-25 15:00   ai40_codemind_mobile/drizzle/meta/0002_snapshot.json
+    13211  2026-08-25 15:19   ai40_codemind_mobile/drizzle/meta/0003_snapshot.json
+    18528  2026-08-25 15:57   ai40_codemind_mobile/drizzle/meta/0004_snapshot.json
+    20711  2026-08-25 17:14   ai40_codemind_mobile/drizzle/meta/0005_snapshot.json
+    25273  2026-08-26 23:17   ai40_codemind_mobile/drizzle/meta/0006_snapshot.json
+        0  2026-08-25 10:32   ai40_codemind_mobile/drizzle/migrations/
+        0  2026-08-25 10:32   ai40_codemind_mobile/drizzle/migrations/.gitkeep
+       27  2026-08-25 10:32   ai40_codemind_mobile/drizzle/relations.ts
+     8926  2026-08-26 23:16   ai40_codemind_mobile/drizzle/schema.ts
+     2165  2026-08-25 14:55   ai40_codemind_mobile/drizzle/0001_worthless_christian_walker.sql
+      140  2026-08-25 15:00   ai40_codemind_mobile/drizzle/0002_ancient_network.sql
+       48  2026-08-25 15:19   ai40_codemind_mobile/drizzle/0003_foamy_corsair.sql
+     1127  2026-08-25 15:57   ai40_codemind_mobile/drizzle/0004_odd_shadow_king.sql
+      451  2026-08-25 17:14   ai40_codemind_mobile/drizzle/0005_mature_roulette.sql
+     1030  2026-08-26 23:17   ai40_codemind_mobile/drizzle/0006_wooden_invisible_woman.sql
+      353  2026-08-25 10:32   ai40_codemind_mobile/drizzle.config.ts
+      228  2026-08-25 10:32   ai40_codemind_mobile/eslint.config.js
+       59  2026-08-25 10:32   ai40_codemind_mobile/global.css
+        0  2026-08-25 10:32   ai40_codemind_mobile/hooks/
+     4622  2026-08-25 10:32   ai40_codemind_mobile/hooks/use-auth.ts
+      134  2026-08-25 10:32   ai40_codemind_mobile/hooks/use-color-scheme.ts
+      480  2026-08-25 10:32   ai40_codemind_mobile/hooks/use-color-scheme.web.ts
+      504  2026-08-25 10:32   ai40_codemind_mobile/hooks/use-colors.ts
+        0  2026-08-25 10:42   ai40_codemind_mobile/lib/
+        0  2026-08-25 10:32   ai40_codemind_mobile/lib/_core/
+     5720  2026-08-25 10:32   ai40_codemind_mobile/lib/_core/api.ts
+     4037  2026-08-25 10:32   ai40_codemind_mobile/lib/_core/auth.ts
+     3534  2026-08-25 10:32   ai40_codemind_mobile/lib/_core/manus-runtime.ts
+      223  2026-08-25 10:32   ai40_codemind_mobile/lib/_core/nativewind-pressable.ts
+     2432  2026-08-25 10:32   ai40_codemind_mobile/lib/_core/theme.ts
+     2620  2026-08-25 10:32   ai40_codemind_mobile/lib/theme-provider.tsx
+     1339  2026-08-25 10:32   ai40_codemind_mobile/lib/trpc.ts
+      390  2026-08-25 10:32   ai40_codemind_mobile/lib/utils.ts
+      792  2026-08-25 10:42   ai40_codemind_mobile/lib/ai40-history.ts
+      380  2026-08-25 10:32   ai40_codemind_mobile/metro.config.js
+      161  2026-08-25 10:32   ai40_codemind_mobile/nativewind-env.d.ts
+     3173  2026-08-25 10:40   ai40_codemind_mobile/package.json
+   446270  2026-08-25 10:40   ai40_codemind_mobile/pnpm-lock.yaml
+        0  2026-08-25 14:47   ai40_codemind_mobile/scripts/
+      299  2026-08-25 10:32   ai40_codemind_mobile/scripts/generate_qr.mjs
+     1501  2026-08-25 10:32   ai40_codemind_mobile/scripts/load-env.js
+     3610  2026-08-25 10:32   ai40_codemind_mobile/scripts/reset-project.js
+     1037  2026-08-25 14:47   ai40_codemind_mobile/scripts/optimize_icons.py
+        0  2026-08-26 23:15   ai40_codemind_mobile/server/
+        0  2026-08-25 10:32   ai40_codemind_mobile/server/_core/
+      654  2026-08-25 10:32   ai40_codemind_mobile/server/_core/context.ts
+     1831  2026-08-25 10:32   ai40_codemind_mobile/server/_core/cookies.ts
+     1901  2026-08-25 10:32   ai40_codemind_mobile/server/_core/dataApi.ts
+      428  2026-08-25 10:32   ai40_codemind_mobile/server/_core/env.ts
+     6784  2026-08-25 10:32   ai40_codemind_mobile/server/_core/heartbeat.ts
+     4392  2026-08-25 10:32   ai40_codemind_mobile/server/_core/imageGeneration.ts
+     2422  2026-08-25 10:32   ai40_codemind_mobile/server/_core/index.ts
+    10674  2026-08-25 10:32   ai40_codemind_mobile/server/_core/llm.ts
+     3116  2026-08-25 10:32   ai40_codemind_mobile/server/_core/notification.ts
+     5983  2026-08-25 10:32   ai40_codemind_mobile/server/_core/oauth.ts
+     9744  2026-08-25 10:32   ai40_codemind_mobile/server/_core/sdk.ts
+     1392  2026-08-25 10:32   ai40_codemind_mobile/server/_core/storageProxy.ts
+      711  2026-08-25 10:32   ai40_codemind_mobile/server/_core/systemRouter.ts
+     1045  2026-08-25 10:32   ai40_codemind_mobile/server/_core/trpc.ts
+        0  2026-08-25 10:32   ai40_codemind_mobile/server/_core/types/
+      125  2026-08-25 10:32   ai40_codemind_mobile/server/_core/types/cookie.d.ts
+     1406  2026-08-25 10:32   ai40_codemind_mobile/server/_core/types/manusTypes.ts
+     8008  2026-08-25 10:32   ai40_codemind_mobile/server/_core/voiceTranscription.ts
+    15697  2026-08-26 23:18   ai40_codemind_mobile/server/db.ts
+    28462  2026-08-26 23:18   ai40_codemind_mobile/server/routers.ts
+     3052  2026-08-25 10:32   ai40_codemind_mobile/server/storage.ts
+     2564  2026-08-25 10:44   ai40_codemind_mobile/server/publicResearch.ts
+    27199  2026-08-25 17:17   ai40_codemind_mobile/server/ai40.ts
+     6028  2026-08-25 15:14   ai40_codemind_mobile/server/repositoryImport.ts
+     1922  2026-08-25 22:12   ai40_codemind_mobile/server/openCodeInterpreterAdapter.ts
+     6871  2026-08-26 23:15   ai40_codemind_mobile/server/agentRuntime.ts
+        0  2026-08-25 10:34   ai40_codemind_mobile/shared/
+        0  2026-08-25 10:32   ai40_codemind_mobile/shared/_core/
+      602  2026-08-25 10:32   ai40_codemind_mobile/shared/_core/errors.ts
+      275  2026-08-25 10:32   ai40_codemind_mobile/shared/const.ts
+      158  2026-08-25 10:32   ai40_codemind_mobile/shared/types.ts
+     2735  2026-08-25 10:34   ai40_codemind_mobile/shared/ai40.ts
+      882  2026-08-25 10:32   ai40_codemind_mobile/tailwind.config.js
+    17039  2026-08-25 10:32   ai40_codemind_mobile/template.json
+        0  2026-08-26 23:15   ai40_codemind_mobile/tests/
+     1721  2026-08-25 10:32   ai40_codemind_mobile/tests/auth.logout.test.ts
+      560  2026-08-25 10:38   ai40_codemind_mobile/tests/ai40.policy.test.ts
+     1357  2026-08-25 10:44   ai40_codemind_mobile/tests/publicResearch.test.ts
+     2670  2026-08-25 14:58   ai40_codemind_mobile/tests/jobs.router.test.ts
+     2679  2026-08-25 15:15   ai40_codemind_mobile/tests/repositoryImport.test.ts
+     1546  2026-08-25 15:18   ai40_codemind_mobile/tests/structuredReview.test.ts
+     1648  2026-08-25 15:59   ai40_codemind_mobile/tests/codingPlan.test.ts
+     1240  2026-08-25 17:16   ai40_codemind_mobile/tests/architecture.test.ts
+     1673  2026-08-25 17:18   ai40_codemind_mobile/tests/engineeringAssessment.test.ts
+      940  2026-08-25 22:12   ai40_codemind_mobile/tests/openCodeInterpreterAdapter.test.ts
+     1392  2026-08-26 23:15   ai40_codemind_mobile/tests/agentRuntime.test.ts
+      525  2026-08-25 10:32   ai40_codemind_mobile/theme.config.d.ts
+      532  2026-08-25 10:32   ai40_codemind_mobile/theme.config.js
+      432  2026-08-25 10:32   ai40_codemind_mobile/tsconfig.json
+     2190  2026-08-25 10:32   ai40_codemind_mobile/.project-config.json
+      110  2026-08-25 10:32   ai40_codemind_mobile/expo-env.d.ts
+        0  2026-08-25 10:32   ai40_codemind_mobile/.gitkeep
+     4788  2026-08-25 10:33   ai40_codemind_mobile/design.md
+     5567  2026-08-26 23:20   ai40_codemind_mobile/todo.md
+        0  2026-08-26 23:14   ai40_codemind_mobile/docs/
+     7104  2026-08-25 10:47   ai40_codemind_mobile/docs/online-service.md
+     3615  2026-08-25 17:13   ai40_codemind_mobile/docs/coding-capability-matrix.md
+     2154  2026-08-25 22:11   ai40_codemind_mobile/docs/opencodeinterpreter-audit.md
+     2499  2026-08-26 23:14   ai40_codemind_mobile/docs/independent-agent-architecture.md
+      324  2026-08-25 10:48   ai40_codemind_mobile/eas.json
+        0  2026-08-25 14:47   ai40_codemind_mobile/.manus/
+        0  2026-08-26 23:21   ai40_codemind_mobile/.manus/checkpoint_zip/
+---------                     -------
+  3708439                     172 files
