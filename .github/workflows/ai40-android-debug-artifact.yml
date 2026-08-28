@@ -50,6 +50,11 @@ jobs:
         run: pnpm exec expo prebuild --platform android --no-install
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+      - name: Isolate debug installation identity
+        working-directory: android
+        run: |
+          sed -i '/^[[:space:]]*debug[[:space:]]*{$/a\\            applicationIdSuffix ".debug"' app/build.gradle
+          grep -n -A3 -B1 'applicationIdSuffix' app/build.gradle
       - name: Build unsigned debug APK
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon --stacktrace

@@ -139,4 +139,12 @@
 - [x] Проанализировать Android crash после splash и текущий стартовый интерфейс AI40.
 - [x] Исправить crash root cause и укрепить Android startup без внешних ключей.
 - [x] Переработать первый экран в качественный portrait-first AI40 CodeMind UX.
-- [ ] Собрать и проверить новый debug APK workflow, typecheck, lint и тесты.
+- [x] Собрать и проверить новый debug APK workflow, typecheck, lint и тесты.
+
+# Android installation compatibility pass
+- [x] Проверить package/ABI/archive/signature surface для ошибки «Приложение не установлено».
+- [x] Исправить debug workflow отдельным applicationIdSuffix `.debug`, чтобы новый APK устанавливался рядом со старой сборкой без конфликта подписи.
+- [x] Прогнать typecheck, Expo lint, tests и git diff --check после packaging fix.
+- [ ] Получить пользовательское подтверждение установки и запуска нового APK.
+
+# End Android installation compatibility pass
