@@ -53,8 +53,8 @@ jobs:
       - name: Isolate debug installation identity
         working-directory: android
         run: |
-          sed -i '/^[[:space:]]*debug[[:space:]]*{$/a\\            applicationIdSuffix ".debug"' app/build.gradle
-          grep -n -A3 -B1 'applicationIdSuffix' app/build.gradle
+          sed -i -E "s/^([[:space:]]*applicationId '[^']*)'/\1.debug'/" app/build.gradle
+          grep -n -A2 -B2 'applicationId' app/build.gradle
       - name: Build unsigned debug APK
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon --stacktrace

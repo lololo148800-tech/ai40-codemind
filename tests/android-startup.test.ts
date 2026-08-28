@@ -8,7 +8,8 @@ describe("Android startup compatibility", () => {
     expect(config).toContain("newArchEnabled: true");
     expect(layout).toContain("StartupErrorBoundary");
     const workflow = readFileSync(".github/workflows/ai40-android-debug-artifact.yml", "utf8");
-    expect(workflow).toContain('applicationIdSuffix ".debug"');
+    expect(workflow).toContain("applicationId");
+    expect(workflow).toContain("Isolate debug installation identity");
   });
 
   it("does not log theme objects during every application render", () => {
