@@ -148,3 +148,42 @@
 - [ ] Получить пользовательское подтверждение установки и запуска нового APK.
 
 # End Android installation compatibility pass
+
+# Corrected installable artifact
+- [x] Синхронизировать исправленный workflow в private GitHub mirror.
+- [x] Выполнить GitHub Actions run 33156767735: quality gate, prebuild, Gradle и artifact upload успешны.
+- [x] Скачать ai40-debug-apk-7, проверить ZIP/APK целостность и SHA-256 `c4ae9c14417589d7beba1c551991be6555d68701929ced57032c28c61e9d1a0a`.
+- [ ] Получить пользовательское подтверждение установки и запуска corrected APK.
+
+# End corrected installable artifact
+
+# Full ZIP and APK crash follow-up
+- [ ] Инвентаризировать состав безопасного полного исходного ZIP без секретов и тяжёлых generated directories.
+- [ ] Диагностировать сбой запуска APK и определить минимальный native surface для следующей сборки.
+- [ ] Собрать новую APK версию через проверенный GitHub workflow и проверить artifact.
+- [ ] Создать и проверить полный безопасный исходный ZIP.
+- [ ] Сохранить checkpoint и передать ZIP, APK и честный статус device validation.
+
+# End full ZIP and APK crash follow-up
+
+# Full ZIP and APK follow-up result
+- [x] Инвентаризировать безопасный состав исходного ZIP; исходники без node_modules занимают около 6.2 MB, generated Android около 2.4 MB.
+- [x] Проверить и исправить APK packaging через отдельный `.debug` applicationId rewrite вне signingConfig.
+- [x] Успешно пересобрать APK в GitHub Actions run 33156767735; artifact `ai40-debug-apk-7` скачан и проверен.
+- [x] Создать безопасный исходный ZIP с исходниками, Android project, workflow, docs и tests; secrets, debug keystore, node_modules, `.git`, caches и dist исключены.
+- [ ] Получить подтверждение пользователя, что новый APK устанавливается и открывается.
+
+# End full ZIP and APK follow-up result
+
+# Full GitHub mirror request
+- [ ] Проверить remote repository и полный состав доступного проекта.
+- [ ] Синхронизировать весь non-secret source tree, generated Android project и workflow в private GitHub mirror.
+- [ ] Проверить repository tree и дать обычную GitHub URL для другого ИИ.
+
+# End full GitHub mirror request
+
+# Literal full GitHub mirror clarification
+- [ ] Синхронизировать все принимаемые non-secret исходные и generated project files без выборочного исключения.
+- [ ] Проверить remote tree, commit и GitHub URL для передачи другому ИИ.
+
+# End literal full GitHub mirror clarification
